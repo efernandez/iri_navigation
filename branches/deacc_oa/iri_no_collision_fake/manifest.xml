@@ -1,0 +1,18 @@
+<package>
+  <description brief="iri_no_collision_fake">
+
+     iri_no_collision_fake
+
+  </description>
+  <author></author>
+  <license>LGPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/iri_no_collision_fake</url>
+  <depend package="roscpp"/>
+  <depend package="iri_base_algorithm"/>
+  <depend package="iri_action_server"/>
+  <depend package="move_base_msgs"/>
+
+</package>
+
+

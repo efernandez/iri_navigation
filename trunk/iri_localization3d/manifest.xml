@@ -1,0 +1,25 @@
+<package>
+  <description brief="iri_localization3d">
+
+     Map-based particle filter 3D localization (6DOF). Map is represented as a geometric 3D model of the environment, in a .obj standard file format. 
+     The filter requires, at least, one odometry source and one laser scanner. It can integrate up to three laser scanners on-board the platform.
+     Expected range observations are computed on-line, thanks to the use of the faramotics library, which is based on openGL rendering.
+
+  </description>
+  <author>Andreu Corominas Murtra</author>
+  <license>LGPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/iri_localization3d</url>
+  <depend package="roscpp"/>
+  <depend package="nav_msgs"/>
+  <depend package="geometry_msgs"/>
+  <depend package="sensor_msgs"/>
+  <depend package="tf"/>
+  <depend package="dynamic_reconfigure" />
+  <depend package="iri_segway_rmp_msgs"/>
+  <depend package="iri_base_algorithm"/>
+  <rosdep name="iri-map_localization-dev"/>
+  
+</package>
+
+

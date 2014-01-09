@@ -1,0 +1,7 @@
+<library path="lib/libiri_bspline_navfn">
+  <class name="iri_bspline_navfn/NavfnROS" type="iri_bspline_navfn::NavfnROS" base_class_type="nav_core::BaseGlobalPlanner">
+    <description>
+      A implementation of a grid based planner using Dijkstra
+    </description>
+  </class>
+</library>

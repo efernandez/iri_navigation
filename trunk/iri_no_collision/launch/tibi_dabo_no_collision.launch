@@ -1,0 +1,45 @@
+<!-- -->
+<launch>
+
+  <!-- load robot defined machines -->
+  <include file="$(find tibi_dabo_base)/machines/$(env ROBOT).machines" />
+
+  <group ns="$(env ROBOT)">
+
+    <!-- no collision -->
+      <!-- published topics: /$(env ROBOT)/segway/cmd_vel -->
+      <!-- subscribed topics: /$(env ROBOT)/sensors/front_laser_scan -->
+      <!--                    /$(env ROBOT)/segway/odom -->
+      <!--                    /$(env ROBOT)/no_collision/velocity -->
+      <!-- service clients: -->
+      <!-- service servers: -->
+      <!-- action clients: -->
+      <!-- action servers: /$(env ROBOT)/no_collision/MoveBase -->
+    <node pkg ="iri_no_collision"
+          type="iri_no_collision"
+          name="no_collision"
+          machine="nav">
+      <param name="~tf_prefix"            value="/$(env ROBOT)" />
+      <param name="~vR_max"               value="0.6" />
+      <param name="~vT_max"               value="1.0" />
+      <param name="~r_acc"                value="1.0" />
+      <param name="~t_acc"                value="0.5" />
+      <param name="~min_safety_dist"      value="0.4" />
+      <param name="~min_safety_angle"     value="10.0" />
+      <param name="~laser_safe_dist"      value="0.8" />
+      <param name="~oa_cone_aperture"     value="100.0" />
+      <param name="~dist_tolerance"       value="0.01" />
+      <param name="~angle_tolerance"      value="0.1" />
+      <param name="~max_angle2stop"       value="60.0" />
+      <remap from="/$(env ROBOT)/no_collision/scan"
+               to="/$(env ROBOT)/sensors/front_laser_scan" />
+      <remap from="/$(env ROBOT)/no_collision/segway_cmd" 
+               to="/$(env ROBOT)/segway/cmd_vel" />
+      <remap from="/$(env ROBOT)/no_collision/segway_odom"
+               to="/$(env ROBOT)/segway/odom" />
+
+    </node>
+
+  </group>
+
+</launch>

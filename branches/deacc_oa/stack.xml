@@ -1,0 +1,13 @@
+<stack>
+  <description brief="iri_navigation">
+
+  Set of algorithms for mobile robot autonomous navigation. 
+
+  </description>
+  <author>Maintained by IRI Robotics Lab</author>
+  <license>LGPL</license>  
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/iri_navigation</url>
+  <depend stack="ros" />
+
+</stack>

@@ -1,0 +1,71 @@
+<!-- -->
+<launch>
+
+  <arg name="rviz"     default="True" />
+
+   <node pkg="tf" type="static_transform_publisher" name="link1_broadcaster"
+		args=" 0 0 0 0 0 0 /map /world 100" />
+
+  <node pkg ="iri_people_simulation"
+        type="iri_people_simulation"
+        name="iri_people_simulation" >
+		<param name="number_persons" value="100"/>
+    	<param name="force_map_path" value="$(find iri_people_simulation)/map/force_map.txt" />
+    	<param name="destination_map_path" value="$(find iri_people_simulation)/map/map_destinations.txt" />
+		<remap from="/iri_people_simulation/robot_pose"
+               to="/iri_force_robot_companion/robot_simulated_pose" />
+  </node>
+  
+<!--
+  <node pkg ="wiimote"
+          type="wiimote_node.py"
+          name="joy"
+          respawn="true"/>
+-->
+
+
+ 	<node name="map_server" 
+		pkg="map_server" 
+		type="map_server" 
+		args="$(find iri_force_robot_companion)/map/brl.yaml">
+			<param name="frame_id" value="/map" />			
+	</node>  
+
+
+  <!-- People prediction node -->
+  <node pkg ="iri_force_robot_companion"
+        type="iri_force_robot_companion"
+        name="iri_force_robot_companion" 
+		output="screen">
+        <param name="move_base"         value="False"/>
+        <param name="robot_sim"         value="True"/>
+        <param name="using_prediction"  value="True"/>
+		<param name="robot_x_ini" value="1.0"/>
+		<param name="robot_y_ini" value="11.0"/>
+        <param name="time_horizon"      value="0.2"/>
+        <param name="reference_frame"   value="/map"/>
+        <param name="v_max"             value="1.0"/>
+        <param name="v_cruise"          value="0.8"/>
+        <param name="force_parameters"  value="True"/>
+        <param name="force_goal"        value="0.0"/>
+        <param name="force_toperson"    value="1.0"/>
+        <param name="force_interaction" value="5.0"/>
+        <param name="r"                 value="1.5"/>
+        <param name="theta"             value="60.0"/>
+    	<param name="force_map_path" value="$(find iri_force_robot_companion)/map/force_map.txt" />
+		<remap from="/iri_force_robot_companion/tracks"
+               to="/iri_people_simulation/tracks" />
+  </node>
+
+
+
+  <node pkg ="rviz" 
+        name="rviz" 
+        type="rviz" 
+		if="$(arg rviz)"
+        args="-d $(find iri_force_robot_companion)/config/sim_test_map.vcg"
+         />
+
+</launch>
+
+

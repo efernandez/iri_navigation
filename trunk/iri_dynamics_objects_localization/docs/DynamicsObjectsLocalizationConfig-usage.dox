@@ -1,0 +1,6 @@
+\subsubsection usage Usage
+\verbatim
+<node name="DynamicsObjectsLocalizationAlgorithm" pkg="iri_dynamics_objects_localization" type="DynamicsObjectsLocalizationAlgorithm">
+</node>
+\endverbatim
+

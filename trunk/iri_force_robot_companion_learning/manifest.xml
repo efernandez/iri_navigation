@@ -1,0 +1,22 @@
+<package>
+  <description brief="iri_force_robot_companion_learning">
+
+     iri_force_robot_companion_learning, always expected to operate in simulation (no cmd_vel to robot) for learing the system parameters prior real experimentation
+
+  </description>
+  <author>gferrer</author>
+  <license>LGPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/iri_force_robot_companion_learning</url>
+  <depend package="roscpp"/>
+  <depend package="iri_base_algorithm"/>
+  <depend package="std_srvs"/>
+  <depend package="std_msgs"/>
+  <depend package="sensor_msgs"/>
+  <depend package="geometry_msgs"/>
+  <depend package="visualization_msgs"/>
+  <depend package="iri_perception_msgs"/>
+  <depend package="tf"/>
+</package>
+
+

@@ -1,0 +1,35 @@
+<package>
+  <description brief="iri_ackermann_local_planner">
+
+     iri_ackermann_local_planner
+
+  </description>
+  <author>Sergi Hernandez Juan</author>
+  <license>LGPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/iri_ackermann_local_planner</url>
+  <depend package="std_msgs" />
+  <depend package="nav_msgs" />
+  <depend package="rosconsole" />
+  <depend package="roscpp" />
+  <depend package="tf" />
+  <depend package="roslib" />
+  <depend package="rospy" />
+  <depend package="pluginlib" />
+  <depend package="costmap_2d" />
+  <depend package="voxel_grid" />
+  <depend package="angles" />
+  <depend package="visualization_msgs"/>
+  <depend package="geometry_msgs"/>
+  <depend package="nav_core"/>
+  <depend package="pcl"/>
+  <depend package="pcl_ros"/>
+  <depend package="common_rosdeps" />
+  <rosdep name="eigen" />
+  <export>
+    <cpp cflags="-I${prefix}/include -I${prefix}/cfg/cpp" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -liri_ackermann_local_planner" />
+    <nav_core plugin="${prefix}/ackermannlp_plugin.xml" />
+  </export>
+</package>
+
+

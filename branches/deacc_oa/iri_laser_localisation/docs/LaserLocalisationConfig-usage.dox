@@ -1,0 +1,8 @@
+\subsubsection usage Usage
+\verbatim
+<node name="LaserLocalisationAlgorithm" pkg="iri_laser_localisation" type="LaserLocalisationAlgorithm">
+  <param name="map_frame" type="str" value="/map" />
+  <param name="odom_frame" type="str" value="/teo/odom" />
+</node>
+\endverbatim
+

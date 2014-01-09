@@ -1,0 +1,6 @@
+\subsubsection usage Usage
+\verbatim
+<node name="RyOaBridgeAlgorithm" pkg="iri_ry_oa_bridge" type="RyOaBridgeAlgorithm">
+</node>
+\endverbatim
+

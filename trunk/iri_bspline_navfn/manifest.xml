@@ -1,0 +1,30 @@
+<package>
+ <description brief="IRI variation of navfn package">
+  IRI_baspline_navfn provides a variation of the original navfn function with a B-spline computation to smooth the path and accomplish with the non holonomic restrictions of a skid steering robot.
+ </description>
+ <author>Maintained by IRI Robotics Lab</author>
+ <license> LGPL</license>
+ <review status="Doc reviewed" notes=""/>
+ <url>http://ros.org/wiki/navfn</url>
+ <depend package="rosconsole"/>
+ <depend package="roscpp"/>
+ <depend package="geometry_msgs"/>
+ <depend package="costmap_2d"/>
+ <depend package="nav_core"/>
+ <depend package="pluginlib"/>
+ <depend package="nav_msgs"/>
+ <depend package="tf"/>
+ <depend package="visualization_msgs"/>
+ <depend package="pcl_ros" />
+<!-- <depend package="eigen" />-->
+
+ <rosdep name="fltk"/>
+ <rosdep name="netpbm"/>
+ <export>
+  <cpp cflags="-I${prefix}/include -I${prefix}/cfg/cpp" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -liri_bspline_navfn"/>
+  <nav_core plugin="${prefix}/iri_bspline_navfn_plugin.xml" />
+ </export>
+  <platform os="ubuntu" version="9.04"/>
+  <platform os="ubuntu" version="9.10"/>
+  <platform os="ubuntu" version="10.04"/>
+</package>

@@ -1,0 +1,24 @@
+<package>
+  <description brief="iri_no_collision">
+
+     iri_no_collision
+
+  </description>
+  <author></author>
+  <license>LGPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/iri_no_collision</url>
+  <depend package="roscpp"/>
+  <depend package="iri_base_algorithm"/>
+  <depend package="visualization_msgs"/>
+  <depend package="geometry_msgs"/>
+  <depend package="nav_msgs"/>
+  <depend package="sensor_msgs"/>
+  <depend package="move_base_msgs"/>
+  <depend package="iri_action_server"/>
+  <depend package="actionlib"/>
+  <depend package="tf"/>
+  
+</package>
+
+

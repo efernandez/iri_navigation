@@ -1,0 +1,42 @@
+<!-- -->
+<launch>
+
+  <!-- load robot defined machines -->
+  <include file="$(find tibi_dabo_base)/machines/$(env ROBOT).machines" />
+
+  <group ns="$(env ROBOT)">
+
+    <!-- Force robot companion -->
+      <!-- published topics:  -->
+      <!-- subscribed topics: /$(env ROBOT)/people_tracking/peopleSet -->
+      <!--                    /$(env ROBOT)/sensors/joy -->
+      <!--                    /$(env ROBOT)/sensors/front_laser_scan -->
+      <!-- service clients: -->
+      <!-- service servers: -->
+      <!-- action clients:  /$(env ROBOT)/no_collision/MoveBase -->
+      <!-- action servers: -->
+    <node pkg ="iri_force_navigation"
+          type="iri_force_navigation"
+          name="force_navigation"
+          machine="nav">
+            <param name="move_base" value="False"/>
+			<param name="time_horizon" value="5.0"/>
+			<param name="v_max" value="1.0"/>
+			<param name="v_cruise" value="0.7"/>
+            <param name="force_goal" value="1.0"/>
+            <param name="force_interaction" value="4.0"/>
+            <param name="force_map" value="0.25"/>
+            <param name="robot_sim" value="False"/>
+			<param name="reference_frame" value="/map"/>
+			<param name="robot_frame" value="/dabo/base_link"/>
+            <param name="force_map_path" value="$(find iri_force_navigation)/map/force_map.txt" />
+            <param name="destination_map_path" value="$(find iri_force_navigation)/map/map_destinations.txt" />
+            <remap from="/$(env ROBOT)/force_navigation/tracks"
+                    to="/$(env ROBOT)/people_tracking/peopleSet" />
+            <remap from="/$(env ROBOT)/move_robot"
+                    to="/$(env ROBOT)/no_collision/MoveBase" />
+    </node>
+
+  </group>
+
+</launch>

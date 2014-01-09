@@ -1,0 +1,13 @@
+\subsubsection usage Usage
+\verbatim
+<node name="NoCollisionAlgorithm" pkg="iri_no_collision" type="NoCollisionAlgorithm">
+  <param name="vT_max" type="double" value="0.6" />
+  <param name="vR_max" type="double" value="0.2" />
+  <param name="acc" type="double" value="0.1" />
+  <param name="min_safety_dist" type="double" value="0.4" />
+  <param name="min_safety_angle" type="double" value="10.0" />
+  <param name="laser_safe_dist" type="double" value="0.8" />
+  <param name="oa_cone_aperture" type="double" value="100.0" />
+</node>
+\endverbatim
+

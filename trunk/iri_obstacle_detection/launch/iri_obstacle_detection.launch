@@ -1,0 +1,4 @@
+<launch>
+	<remap from="iri_obstacle_detection/cloud_raw" to="camboard/pointcloud/cloud_raw" />
+	<node name="iri_obstacle_detection" pkg="iri_obstacle_detection" type="iri_obstacle_detection" output="screen" />
+</launch>

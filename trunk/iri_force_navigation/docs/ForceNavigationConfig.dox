@@ -1,0 +1,22 @@
+\subsubsection parameters ROS parameters
+
+Reads and maintains the following parameters on the ROS server
+
+- \b "~move_base" : \b [bool] move base doesnt send platform commands min: False, default: False, max: True
+- \b "~stop_robot" : \b [bool] Stops the robot inmediatly min: False, default: False, max: True
+- \b "~set_planning" : \b [bool] Enables or disables the generation of new paths min: False, default: False, max: True
+- \b "~manual_planning" : \b [str] global planning manually set, #destiantion=integers separed only by spaces min: , default: , max: 
+- \b "~v_max" : \b [double] Max velocity allowed min: 0.0, default: 1.2, max: 5.0
+- \b "~v_cruise" : \b [double] Min velocity allowed min: 0.0, default: 0.8, max: 5.0
+- \b "~time_horizon" : \b [double] Time of propagated horizon min: 0.0, default: 0.2, max: 20.0
+- \b "~force_goal" : \b [double] Force to goal [blue] min: 0.0, default: 1.0, max: 2.0
+- \b "~force_interaction" : \b [double] Force of interaction with target[green] min: 0.0, default: 9.0, max: 20.0
+- \b "~force_map" : \b [double] Force of the obstacles appearing in map[black] min: 0.0, default: 0.25, max: 1.0
+- \b "~robot_sim" : \b [bool] Robot position and movement is simulated min: False, default: False, max: True
+- \b "~robot_x_ini" : \b [double] robot initial x position min: -1000.0, default: 0.0, max: 1000.0
+- \b "~robot_y_ini" : \b [double] robot initial y position min: -1000.0, default: 0.0, max: 1000.0
+- \b "~reference_frame" : \b [str] Prediction Reference frame min: , default: /map, max: 
+- \b "~robot_frame" : \b [str] Robot specific frame min: , default: /dabo/base_link, max: 
+- \b "~force_map_path" : \b [str] path to force map file min: , default: /home, max: 
+- \b "~destination_map_path" : \b [str] path to force map file min: , default: /home, max: 
+

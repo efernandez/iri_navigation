@@ -1,0 +1,12 @@
+\subsubsection parameters ROS parameters
+
+Reads and maintains the following parameters on the ROS server
+
+- \b "~vT_max" : \b [double] Maximum Translational Velocity min: 0.1, default: 0.6, max: 1.5
+- \b "~vR_max" : \b [double] Maximum Rotation Velocity min: 0.1, default: 0.2, max: 1.0
+- \b "~acc" : \b [double] Constant Acceleration min: 0.05, default: 0.1, max: 1.0
+- \b "~min_safety_dist" : \b [double] Minimum Safety Distance to Obstacle min: 0.2, default: 0.4, max: 2.0
+- \b "~min_safety_angle" : \b [double] Minimum Safety Angle to Obstacle min: 0.0, default: 10.0, max: 120.0
+- \b "~laser_safe_dist" : \b [double] Laser Distance Free of Obstacles min: 0.5, default: 0.8, max: 4.0
+- \b "~oa_cone_aperture" : \b [double] Cone Angle Free of Obstacles min: 90.0, default: 100.0, max: 180.0
+

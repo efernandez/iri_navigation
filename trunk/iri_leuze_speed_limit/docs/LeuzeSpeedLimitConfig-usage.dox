@@ -1,0 +1,10 @@
+\subsubsection usage Usage
+\verbatim
+<node name="LeuzeSpeedLimitAlgorithm" pkg="iri_leuze_speed_limit" type="LeuzeSpeedLimitAlgorithm">
+  <param name="zone1_max_speed" type="double" value="0.1" />
+  <param name="zone2_max_speed" type="double" value="0.2" />
+  <param name="zone3_max_speed" type="double" value="0.3" />
+  <param name="zone4_max_speed" type="double" value="0.4" />
+</node>
+\endverbatim
+

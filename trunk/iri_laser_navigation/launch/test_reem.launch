@@ -1,0 +1,58 @@
+<!-- laser navigation testing-->
+<launch>
+
+<arg name="publish_map" default="false" />
+<param name="use_sim_time" value="true" />
+
+<include  file="$(find pal_navigation)/launch/rh2_pujades.launch"/>
+<include  file="$(find pal_navigation)/launch/laser_navigation.launch"/>
+
+<node name="rviz" pkg="rviz" type="rviz"/>
+
+<node name="iri_laser_icp"
+      pkg="iri_laser_icp"
+      type="iri_laser_icp"
+      output="screen">
+    <param name="~max_angular_correction_deg" value="30"/>
+    <param name="~max_linear_correction" value="1"/>
+    <param name="~max_iterations" value="30"/>
+    <param name="~max_correspondence_dist" value="0.5"/>
+    <param name="~clustering_threshold" value="0.1"/>
+    <param name="~orientation_neighbourhood" value="50"/>
+    <param name="~use_point_to_line_distance" value="1"/>
+    <param name="~use_corr_tricks" value="1"/>
+    <param name="~restart" value="1"/>
+    <param name="~do_visibility_test" value="0"/>
+    <param name="~do_compute_covariance" value="0"/>
+</node>
+
+<node name="iri_laser_localisation"
+      pkg="iri_laser_localisation"
+      type="iri_laser_localisation"
+      output="screen">
+      <remap from="~scan_sens" to="/LAS_00" />
+      <remap from="~scan_ref" to="/iri_laser_navigation/scans_map" />
+      <param name="~odom_frame" value="/odom" />
+      <param name="~base_frame" value="/base_footprint" />
+</node>
+
+<node name="pwcs_to_odom"
+      pkg="iri_msg_to_odom"
+      type="posewcs_to_odom">
+      <remap from="~pose" to="/iri_laser_localisation/pose"/>
+      </node>
+
+<node name="iri_laser_navigation"
+      pkg="iri_laser_navigation"
+      type="iri_laser_navigation"
+      output="screen">
+      <remap from="~scan" to="/LAS_00"/>
+      <param name="~bag_path"   value="/home/mmorta/Experiments/iri_laser_navigation/simulation/iri_laser_navigation_with_reem/test_reem.bag"/>
+      <param name="~scan_topic" value="/LAS_00"/>
+      <param name="~scan_path_frame_id" value="/base_laser_link"/>
+      <param name="~pose_topic" value="/base_pose_ground_truth"/>
+      <param name="~goal_frame" value="/map"/>
+      <param name="~publish_all" value="$(arg publish_map)"/>
+</node>
+
+</launch>

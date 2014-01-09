@@ -1,0 +1,45 @@
+<!-- -->
+<launch>
+  <param name="robot_description" command="cat $(find tibi_dabo_base)/model/$(env ROBOT)_base.urdf" />
+  <node pkg ="robot_state_publisher"
+        type="state_publisher"
+        name="robot_state_publisher">
+      <param name="tf_prefix" value="" type="str" />
+    </node>
+
+  <node pkg ="tf" 
+        type="static_transform_publisher" 
+        name="head_pan"
+        args="0.01722 0 0.025 0 0 0 /neck1 /neck2 100"/>
+
+  <node pkg ="tf"
+        type="static_transform_publisher" 
+        name="head_tilt" 
+        args="0 0 0.051 -1.5707963 0 -1.5707963 /neck2 /neck3 100"/>
+
+  <node pkg ="tf"
+        type="static_transform_publisher"
+        name="head_roll"
+        args="0 -0.045 0 -1.5707963 0 -1.5707963 /neck3 /head 100"/>
+
+  <node pkg ="tf" 
+        type="static_transform_publisher" 
+        name="left_arm_pan"
+        args="0.0 0.0 0.023 0.0  0.0 0.0 /left_shoulder1  /left_shoulder2 100"/>
+
+  <node pkg ="tf"
+        type="static_transform_publisher"
+        name="left_arm_tilt"
+        args="0.0 0.0 0.0435 0.0 -1.5707963 0.0 /left_shoulder2  /left_arm 100"/>
+
+  <node pkg ="tf"
+        type="static_transform_publisher" 
+        name="right_arm_pan"
+        args="0.0  0.0  0.023  0.0  0.0  0.0 /right_shoulder1 /right_shoulder2 100"/>
+
+  <node pkg ="tf"
+        type="static_transform_publisher"
+        name="right_arm_tilt"
+        args="0.0  0.0  0.0435 0.0 -1.5707963  0.0 /right_shoulder2 /right_arm 100"/>
+
+</launch>

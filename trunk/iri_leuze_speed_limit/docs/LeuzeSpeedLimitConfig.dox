@@ -1,0 +1,9 @@
+\subsubsection parameters ROS parameters
+
+Reads and maintains the following parameters on the ROS server
+
+- \b "~zone1_max_speed" : \b [double] Maximum speed for zone1 min: 0.0, default: 0.1, max: 3.0
+- \b "~zone2_max_speed" : \b [double] Maximum speed for zone2 min: 0.0, default: 0.2, max: 3.0
+- \b "~zone3_max_speed" : \b [double] Maximum speed for zone3 min: 0.0, default: 0.3, max: 3.0
+- \b "~zone4_max_speed" : \b [double] Maximum speed for zone3 min: 0.0, default: 0.4, max: 3.0
+

@@ -1,0 +1,7 @@
+<library path="lib/libiri_template_local_planner">
+  <class name="iri_template_local_planner/TemplateLocalPlanner" type="TemplateLocalPlanner" base_class_type="nav_core::BaseLocalPlanner">
+    <description>
+      A template implementation of a local planner
+    </description>
+  </class>
+</library>

@@ -1,0 +1,38 @@
+<!-- -->
+<launch>
+
+  <group ns="$(env ROBOT)">
+
+    <!-- Force robot companion -->
+      <!-- published topics:  -->
+      <!-- subscribed topics: /$(env ROBOT)/people_tracking/peopleSet -->
+      <!--                    /$(env ROBOT)/sensors/joy -->
+      <!--                    /$(env ROBOT)/sensors/laser/scan -->
+      <!-- service clients: -->
+      <!-- service servers: -->
+      <!-- action clients:  /$(env ROBOT)/no_collision/MoveBase -->
+      <!-- action servers: -->
+  <!-- People prediction node -->
+  <node pkg ="iri_force_navigation"
+        type="iri_force_navigation"
+        name="iri_force_navigation" 
+		output="screen">
+		<param name="move_base" value="False"/>
+        <param name="force_goal" value="1.0"/>
+        <param name="force_interaction" value="9.0"/>
+        <param name="force_map" value="0.25"/>
+        <param name="v_max"             value="1.2"/>
+        <param name="v_cruise"          value="1.0"/>
+		<param name="robot_sim" value="True"/>
+		<param name="robot_x_ini" value="1.0"/>
+		<param name="robot_y_ini" value="11.0"/>
+    	<param name="force_map_path" value="$(find iri_force_navigation)/map/force_map.txt" />
+    	<param name="destination_map_path" value="$(find iri_force_navigation)/map/map_destinations.txt" />
+		<remap from="/$(env ROBOT)/iri_force_navigation/tracks"
+               to="/$(env ROBOT)/iri_people_simulation/tracks" />
+  </node>
+
+
+  </group>
+
+</launch>

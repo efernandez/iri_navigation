@@ -1,0 +1,99 @@
+
+<!--
+	This launch the localization algorithm using amcl in ROS
+	It is needed to give an initial pose estimation for the robot
+-->
+
+<launch>
+
+	<!-- Load robot defined machines -->
+	<include file="$(find tibi_dabo_base)/machines/$(env ROBOT).machines" />
+
+  <!-- include file="$(find tibi_dabo_base)/launch/tibi_dabo_bumblebee.launch"/-->
+
+  <!-- Navigation Sensors -->
+  <include file="$(find tibi_dabo_base)/launch/tibi_dabo_nav_sensors.launch">
+    <arg name="launch_teleop" value="False" />
+    <arg name="launch_rviz" value="False" />
+  </include>
+
+	<!-- start the map server -->
+	<node name="map_server" 
+		pkg="map_server" 
+		type="map_server" 
+		args="$(find iri_localization2d)/maps/brl8.yaml" 
+		machine="nav">
+			<param name="frame_id" value="/map" />			
+	</node>
+
+	<!-- start AMCL -->
+	<node name="amcl" 
+		pkg="amcl" 
+		type="amcl"
+		machine="nav">
+			<!--remap from="scan" to="/dabo/front_laser/scan"/-->
+			<remap from="scan" to="/iri_dynamics_objects_localization/scan_filtered"/>
+			<param name="odom_frame_id" value="/dabo/odom" />
+			<param name="base_frame_id" value="/dabo/base_link" />
+			<param name="global_frame_id" value="/map" />
+			<param name="initial_pose_x" value="32" />
+			<param name="initial_pose_y" value="3" />
+			<param name="initial_pose_a" value="3.14" />
+	</node>	
+
+  <!--- Run robag -->
+  <!--node  pkg="rosbag" 
+        type="rosbag" 
+        name="rosbag" 
+        args="play $(find iri_dynamics_objects_localization)/bags/fme_multiple_persons.bag" 
+	output="screen"/ -->
+
+
+<!-- rviz configurated -->
+	<node name="rviz" 
+		pkg="rviz" 
+		type="rviz"
+		machine="monitor"
+		args="-d $(find iri_dynamics_objects_localization)/config/rviz_2.vcg">
+	</node>
+
+	<!-- people detector -->
+	<node pkg ="iri_laser_people_detection"
+		type="iri_laser_people_detection"
+    name="iri_laser_people_detection"  
+		machine="nav"
+    output="screen">
+    	<param name="~/range_threshold" value="4.0" type="double"/> 			<!-- default= 4.0 -->
+      <param name="~/jump_distance" value="0.1" type="double"/> 			<!-- default= 0.1 -->
+    	<!-- <param name="~/scanTopicString" value="/tibi/front_laser/scan" type="str"/> -->	<!-- default= "scan" -->
+      <remap from="/iri_laser_people_detection/scan"
+               to="/$(env ROBOT)/front_laser/scan"/>
+	</node>
+
+	<!-- delete people -->
+	<node pkg="iri_dynamics_objects_localization"
+	type="iri_dynamics_objects_localization"
+	name="iri_dynamics_objects_localization"
+	machine="nav"
+	output="screen">
+    <!-- rosparam command="load" file="$(find tibi_amcl)/config/laser_filter.yaml" / -->
+    <remap from="/iri_dynamics_objects_localization/scan" to="/$(env ROBOT)/front_laser/scan" />
+		<remap from="/iri_dynamics_objects_localization/people" to="/iri_laser_people_detection/people" />
+  </node>
+
+	  <group ns="$(env ROBOT)">
+
+		<!-- Head node -->
+      <!--node pkg ="tibi_dabo_head_node"
+            type="tibi_dabo_head_node"
+            name="tibi_dabo_head_node"
+            machine="visio"
+            output="screen">
+        <remap from="/$(env ROBOT)/tibi_dabo_head_node/joint_feedback"
+                 to="/$(env ROBOT)/joint_states" />
+        <param name="XML_path" value="$(find tibi_dabo_head_node)/$(env ROBOT)/"/>
+      </node-->
+
+	</group>
+
+</launch>

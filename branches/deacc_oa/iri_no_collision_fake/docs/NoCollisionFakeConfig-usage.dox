@@ -1,0 +1,6 @@
+\subsubsection usage Usage
+\verbatim
+<node name="NoCollisionFakeAlgorithm" pkg="iri_no_collision_fake" type="NoCollisionFakeAlgorithm">
+</node>
+\endverbatim
+

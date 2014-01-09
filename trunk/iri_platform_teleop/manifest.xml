@@ -1,0 +1,19 @@
+<package>
+  <description brief="iri_platform_teleop">
+
+     iri_platform_teleop
+
+  </description>
+  <author>Joan Perez, jnperez at iri.upc.edu</author>
+  <license>LGPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/iri_platform_teleop</url>
+  <depend package="roscpp"/>
+  <depend package="iri_base_algorithm"/>
+  <depend package="geometry_msgs"/>
+  <depend package="sensor_msgs"/>
+  <depend package="wiimote"/>
+
+</package>
+
+

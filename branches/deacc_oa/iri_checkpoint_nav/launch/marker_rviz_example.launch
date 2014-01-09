@@ -1,0 +1,7 @@
+<launch>
+  <node name="rviz" pkg="rviz" type="rviz" />
+  <node name="marker_example"
+        pkg="iri_checkpoint_nav"
+        type="checkpoint_marker_example"
+        output="screen" />
+</launch>

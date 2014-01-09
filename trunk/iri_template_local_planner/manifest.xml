@@ -1,0 +1,26 @@
+<package>
+  <description brief="iri_template_local_planner">
+
+     iri_template_local_planner
+
+  </description>
+  <author>fherrero</author>
+  <license>LGPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/iri_template_local_planner</url>
+  <depend package="roscpp"/>
+  <depend package="iri_base_algorithm"/>
+  <depend package="nav_msgs"/>
+  <depend package="pluginlib" />
+  <depend package="nav_core"/>
+  <depend package="costmap_2d" />
+  <depend package="tf" />
+
+  <export>
+    <cpp cflags="-I${prefix}/include -I${prefix}/cfg/cpp" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -liri_template_local_planner" />
+    <nav_core plugin="${prefix}/templatelp_plugin.xml" />
+  </export>
+
+</package>
+
+

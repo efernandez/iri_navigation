@@ -1,0 +1,7 @@
+\subsubsection usage Usage
+\verbatim
+<node name="SafeCmdAlgorithm" pkg="iri_safe_cmd" type="SafeCmdAlgorithm">
+  <param name="unsafe" type="bool" value="False" />
+</node>
+\endverbatim
+

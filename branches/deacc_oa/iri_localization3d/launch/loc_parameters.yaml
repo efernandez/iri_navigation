@@ -1,0 +1,61 @@
+# Localization parameters.
+
+#general filter params. debug_mode: 1 -> Active. Rate (wished) in Hz. 
+debug_mode: 0
+filter_rate: 10
+num_particles: 50
+
+#initilaization 2D pose. Coordinates (pitch/roll are assumed 0 at init and z constrained to the floor).
+initX: 9.0
+initY: 11.0
+initH: 0.0
+
+#map files.
+mapFile: /home/andreu/iriSw/algorithms/faramotics/trunk/models/fmeBigDoorOpen.obj
+floorGridFile: /home/andreu/iriSw/algorithms/faramotics/trunk/models/fmeBigDoor_zGrid_20cm.txt
+
+#kinematic sample model using odometry. Percentual errors over the odometry increments [%].
+odo_error_XY: 0.1
+odo_error_H: 0.2
+odo_error_P: 0.2
+odo_error_R: 0.2
+
+#3axis compass parameters. Standard deviation [rad].
+sigma_heading: 0.017
+sigma_pitch_roll: 0.017
+# sigma_pitch_roll: 0.035
+
+#laser_0 parameters. Angles in rad, ranges in m.
+l0_frameName: front_laser
+l0_nRays: 720
+l0_aperture: 3.14
+l0_rMin: 0.3
+l0_rMax: 20
+l0_sigma_range: 0.05
+
+#laser_1 parameters. Angles in rad, ranges in m.
+l1_frameName: rear_laser
+l1_nRays: 133
+l1_aperture: 3.31
+l1_rMin: 0.3
+l1_rMax: 10
+l1_sigma_range: 0.05
+
+#laser_2 parameters. Angles in rad, ranges in m.
+l2_frameName: vertical_laser
+#l2_nRays: 720
+#l2_aperture: 3.14
+#l2_nRays: 360
+#l2_aperture: 1.57
+l2_nRays: 240
+l2_aperture: 1.05
+l2_rMin: 0.3
+l2_rMax: 10
+l2_sigma_range: 0.05
+
+#resampling
+#     0: REGULARIZED_FIXED
+#     1: REGULARIZED_ADAPTATIVE_TO_ODOMETRY
+#     2: LOW_VARIANCE_FIXED
+#     3: LOW_VARIANCE_ADAPTATIVE_TO_ODOMETRY
+resampling_style: 3

@@ -1,0 +1,187 @@
+<!-- -->
+<launch>
+
+  <!-- load robot defined machines -->
+  <include file="$(find tibi_dabo_base)/machines/$(env ROBOT).machines" />
+
+  <!-- tibi_dabo_test (base, platform, sensors) -->
+  <include file="$(find tibi_dabo_base)/launch/tibi_dabo_test.launch">
+    <arg name="rviz"      value="False" />
+    <arg name="teleop"    value="False" />
+    <arg name="front"     value="True" />
+    <arg name="rear"      value="True" />
+    <arg name="vertical"  value="False" />
+    <arg name="wiimote"   value="True" />
+    <arg name="bumblebee" value="False" />
+  </include>
+
+  <group ns="$(env ROBOT)">
+
+    <!-- test nodes here, or include this whole launch -->
+    <!-- load 2d map -->
+    <node pkg ="map_server" 
+          type="map_server" 
+          name="map_server" 
+          args="$(find tibi_dabo_rosnav)/maps/mr_lab.yaml" 
+          machine="nav">
+      <param name="frame_id" value="/map" />
+    </node>
+
+    <!-- amcl localization 2d -->
+    <node pkg ="amcl" 
+          type="amcl" 
+          name="amcl"
+          machine="nav">
+      <remap from="scan" 
+               to="/$(env ROBOT)/front_laser/scan"/>
+      <param name="odom_frame_id" value="/$(env ROBOT)/odom" />
+      <param name="base_frame_id" value="/$(env ROBOT)/base_link" />
+      <param name="global_frame_id" value="/map" />
+      <param name="min_particles" value="100" />
+      <param name="max_particles" value="500" />
+      <param name="initial_pose_x" value="0" />
+      <param name="initial_pose_y" value="0" />
+      <param name="initial_pose_a" value="0" />
+      <param name="gui_publish_rate" value="1" />
+    </node>
+
+
+    <!-- no collision -->
+    <node pkg ="iri_no_collision"
+          type="iri_no_collision"
+          name="iri_no_collision"
+          machine="nav"
+          output="screen">
+      <remap from="/$(env ROBOT)/iri_no_collision/scan"
+               to="/$(env ROBOT)/front_laser/scan" />
+      <remap from="/$(env ROBOT)/iri_no_collision/segway_cmd" 
+               to="/$(env ROBOT)/iri_segway_rmp200/cmd_vel" />
+      <remap from="/$(env ROBOT)/iri_no_collision/segway_odom"
+               to="/$(env ROBOT)/iri_segway_rmp200_odom/odom" />
+      <remap from="/$(env ROBOT)/iri_no_collision/target_vel"
+               to="/$(env ROBOT)/iri_force_robot_companion/velocity" />
+      <param name="~tf_prefix" value="/$(env ROBOT)" />
+      <param name="~r_acc"  value="1.0" />
+      <param name="~vR_max" value="1.0" />
+      <param name="~vT_max"  value="1.0" />
+    </node>
+
+    <!-- Force robot companion -->
+
+    <node pkg ="iri_force_robot_companion"
+          type="iri_force_robot_companion"
+          name="iri_force_robot_companion" 
+          machine="nav"
+          output="screen">
+                <param name="move_base" value="False"/>
+                <param name="robot_sim" value="False"/>
+                <param name="using_prediction" value="True"/>
+                <param name="time_horizon" value="5"/>
+                <param name="reference_frame" value="/map"/>
+                <param name="v_max" value="1.0"/>
+                <param name="v_cruise" value="0.8"/>
+                <param name="force_parameters" value="True"/>
+                <param name="force_goal" value="0.2"/>
+                <param name="force_toperson" value="1.3"/>
+                <param name="force_interaction" value="5.0"/>
+                <param name="force_laser" value="10"/>
+                <param name="force_map" value="1.0"/>
+                <param name="r" value="0.0"/>
+                <param name="theta" value="60.0"/>
+				<param name="B_obstacle" value="0.65"/>
+				<param name="B_rob_per" value="0.9"/>
+            <remap from="/$(env ROBOT)/iri_force_robot_companion/tracks"
+                     to="/$(env ROBOT)/iri_people_tracking/peopleSet" />
+            <remap from="/$(env ROBOT)/move_base"
+                     to="/$(env ROBOT)/iri_no_collision/MoveBase" />
+            <remap from="/$(env ROBOT)/iri_force_robot_companion/joy"
+                     to="/$(env ROBOT)/joy" />
+            <remap from="/$(env ROBOT)/iri_force_robot_companion/laser"
+                     to="/$(env ROBOT)/front_laser/scan" />
+    </node>
+
+    <!-- laser people detector FRONT -->
+    <node pkg ="iri_laser_people_detection"
+          type="iri_laser_people_detection"
+          name="iri_laser_people_detection_front"
+          machine="nav">
+      <param name="~/range_threshold"     value="40.0" type="double"/>
+      <param name="~/detection_threshold" value="-0.1" type="double"/>
+      <param name="~/markerSize"          value= "0.4" type="double"/>
+      <remap from="/$(env ROBOT)/iri_laser_people_detection_front/scan"
+               to="/$(env ROBOT)/front_laser/scan" />
+      <remap from="/$(env ROBOT)/iri_laser_people_detection_front/people"
+             to="/$(env ROBOT)/people_front" />
+    </node>
+
+    <!-- laser people detector REAR -->
+   <node pkg ="iri_laser_people_detection"
+          type="iri_laser_people_detection"
+          name="iri_laser_people_detection_rear"
+          machine="nav">
+      <param name="~/range_threshold"     value="40.0" type="double"/>
+      <param name="~/detection_threshold" value="-0.1" type="double"/>
+      <param name="~/markerSize"          value= "0.4" type="double"/>
+      <remap from="/$(env ROBOT)/iri_laser_people_detection_rear/scan"
+               to="/$(env ROBOT)/rear_laser/scan" />
+      <remap from="/$(env ROBOT)/iri_laser_people_detection_rear/people"
+             to="/$(env ROBOT)/people_rear" />
+    </node>
+
+    <!-- people detection fusion -->
+    <node pkg ="iri_laser_people_detection_fusion"
+          type="iri_laser_people_detection_fusion"
+          name="iri_laser_people_detection_fusion"
+          machine="nav">
+    <remap from="/$(env ROBOT)/iri_laser_people_detection_fusion/people1" 
+             to="/$(env ROBOT)/people_front"/>
+    <remap from="/$(env ROBOT)/iri_laser_people_detection_fusion/people2" 
+             to="/$(env ROBOT)/people_rear"/>
+    <remap from="/$(env ROBOT)/iri_laser_people_detection_fusion/people"
+             to="/$(env ROBOT)/people"/>
+    <param name="~tf_prefix" value="/$(env ROBOT)" />
+    </node>
+
+    <!-- people tracker -->
+    <node pkg ="iri_people_tracking"
+          type="iri_people_tracking"
+          name="iri_people_tracking"
+          machine="nav">
+      <remap from="/$(env ROBOT)/iri_people_tracking/people_detection"
+               to="/$(env ROBOT)/people" />
+      <remap from="/$(env ROBOT)/iri_people_tracking/odom"
+               to="/$(env ROBOT)/segway_rmp200_odom/odom" />
+    </node>
+
+    <!-- publish front_laser in fusion_laser -->
+    <node pkg ="tibi_dabo_laserscan_copy"
+          type="tibi_dabo_laserscan_copy"
+          name="tibi_dabo_laserscan_copy_front"
+          machine="nav">
+      <remap from="/$(env ROBOT)/tibi_dabo_laserscan_copy_front/scan"
+               to="/$(env ROBOT)/front_laser/scan" />
+      <remap from="/$(env ROBOT)/tibi_dabo_laserscan_copy_front/scan_out"
+               to="/$(env ROBOT)/fusion_laser/scan" />
+    </node>
+
+    <!-- publish rear_laser in fusion_laser -->
+    <node pkg ="tibi_dabo_laserscan_copy"
+          type="tibi_dabo_laserscan_copy"
+          name="tibi_dabo_laserscan_copy_rear"
+          machine="nav">
+      <remap from="/$(env ROBOT)/tibi_dabo_laserscan_copy_rear/scan"
+               to="/$(env ROBOT)/rear_laser/scan" />
+      <remap from="/$(env ROBOT)/tibi_dabo_laserscan_copy_rear/scan_out"
+               to="/$(env ROBOT)/fusion_laser/scan" />
+    </node>
+
+  </group>
+
+  <node pkg ="rviz"
+        type="rviz"
+        name="rviz"
+        machine="monitor"
+        args="-d $(find iri_force_robot_companion)/config/$(env ROBOT)_companion.vcg">
+  </node>
+
+</launch>

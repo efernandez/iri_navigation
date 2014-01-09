@@ -1,0 +1,52 @@
+<package>
+  <description brief="iri_poseslam">
+    <p>
+    This is the software associated with the following papers:
+    </p>
+    <p>
+    V. Ila, J.M. Porta and J. Andrade-Cetto.<br />
+    <b>Information-based compact Pose SLAM.</b><br />
+    IEEE Transactions on Robotics, 26(1): 78-93, 2010.<br />
+    http://www.iri.upc.edu/download/scidoc/1096
+    </p>
+    <p>
+    V. Ila, J.M. Porta and J. Andrade-Cetto.<br />
+    <b>Amortized constant time state estimation in Pose SLAM and hierarchical SLAM using a mixed Kalman-information filter.</b><br />
+     Robotics and Autonomous Systems, 59(5): 310-318, 2011.<br />
+     http://www.iri.upc.edu/download/scidoc/1226
+    </p>
+    <p>
+    R. Valencia, M. Morta, J. Andrade-Cetto and J.M. Porta.<br />
+    <b>Planning reliable paths with Pose SLAM.</b><br />
+    IEEE Transactions on Robotics, 29(4): 1050-1059, 2013.<br />
+    http://www.iri.upc.edu/download/scidoc/1419
+    </p>
+    <p>
+    The Matlab code related to this package is in:<br />
+    <a href="http://www.iri.upc.edu/people/porta/Soft/TRO-Doc/index.html">Matlab toolbox for PoseSLAM</a>
+    or straight <a href="http://www.iri.upc.edu/people/porta/Soft/TRO-Code.tar.gz">code.tar.gz</a>
+    </p>
+    <p>
+    These are the Spanish national projects that have made possible this software:<br />
+    <a href="http://www.iri.upc.edu/project/show/83">PAU: Percepción y acción ante incertidum/bre</a><br />
+    <a href="http://www.iri.upc.edu/project/show/115">PAU+: Perception and Action in Robotics Problems with Large State Spaces</a>
+    </p>
+  </description>
+  <author>Joan Vallvé</author>
+  <license>LGPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/iri_poseslam</url>
+  <depend package="roscpp"/>
+  <depend package="iri_base_algorithm"/>
+  <depend package="geometry_msgs"/>
+  <depend package="tf"/>
+  <depend package="sensor_msgs"/>
+  <depend package="iri_nav_msgs"/>
+  <depend package="iri_laser_icp"/>
+  <depend package="rosbag"/>
+  <depend package="laser_geometry"/>
+  <depend package="pcl_ros"/>
+  <depend package="pcl"/>
+</package>
+
+

@@ -1,0 +1,67 @@
+<!-- -->
+
+<launch>
+	
+	<!-- uses sim time (rosbag time) -->
+<!-- 	<param name="/use_sim_time" value="True"/> -->
+
+	<!-- FME Big Door environment urdf launch file -->
+<!-- 	<param name="fme/robot_description" command="cat $(find tibi_dabo_description)/urdf/fme.urdf" /> -->
+ 	<include file="$(find tibi_dabo_base)/launch/fme.launch"/> -->
+
+	<!-- Rosbag: Platform, Odometry, front and rear lasers and clock in FME Big Door environment-->
+	<node	pkg="rosbag"
+		type="rosbag"
+		name="rosbag"
+		args="play --clock -s 4 /home/andreu/rosbags/localization/2011-12-22-12-27-51-fixed.bag"
+                machine="nav" />	
+
+	<!-- 	Launch localization node inside a namespace defining robot name -->
+	<group ns="$(env ROBOT)">
+		<!-- segway urdf model -->
+		<param name="robot_description" command="cat $(find tibi_dabo_base)/model/tibi_dabo_base.urdf" />
+		
+		<!-- map-based localization node -->
+		<node	pkg="iri_localization3d"
+			type="iri_localization3d"
+			name="iri_localization3d"
+			args=""
+			output="screen">
+			<remap from="/$(env ROBOT)/iri_localization3d/platform_data"
+				to="/$(env ROBOT)/iri_segway_rmp200/status" />
+			<remap from="/$(env ROBOT)/iri_localization3d/platform_odom"
+				to="/$(env ROBOT)/iri_segway_rmp200_odom/odom" />
+			<remap from="/$(env ROBOT)/iri_localization3d/laser0/scan"
+				to="/$(env ROBOT)/front_laser/scan" />
+			<remap from="/$(env ROBOT)/iri_localization3d/laser1/scan"
+				to="/$(env ROBOT)/rear_laser/scan" />
+			<remap from="/$(env ROBOT)/iri_localization3d/laser2/scan"
+				to="/$(env ROBOT)/vertical_laser/scan" />
+
+			<rosparam file="$(find iri_localization3d)/launch/loc_parameters.yaml" command="load" />
+			<param name="~tf_prefix" value="/$(env ROBOT)" type="str"/>
+
+		</node>
+	</group>
+
+	<!-- rviz configurated for debug localization -->
+	<node name="rviz" 
+		pkg="rviz" 
+		type="rviz" 
+		args="-d $(find iri_localization3d)/launch/debugLoc.vcg">
+		<param name="~tf_prefix" value="/$(env ROBOT)" type="str"/>
+	</node>
+
+	<node name="rxplot" 
+		pkg="rxtools" 
+		type="rxplot" 
+		args="-p 40 -r 10 -t pitch_roll 
+			/$(env ROBOT)/iri_localization3d/position/pose/covariance[33],/$(env ROBOT)/iri_segway_rmp200/status/pitch_angle 
+			/$(env ROBOT)/iri_localization3d/position/pose/covariance[34],/$(env ROBOT)/iri_segway_rmp200/status/roll_angle">
+	</node>
+
+
+</launch>
+
+<!-- args="-d $(find iri_localization3d)/launch/debugLoc.vcg" -->
+<!-- args="-d $(find tibi_dabo_operations)/launch/nav_sensors.vcg"> -->

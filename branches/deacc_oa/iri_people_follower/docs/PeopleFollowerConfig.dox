@@ -1,0 +1,6 @@
+\subsubsection parameters ROS parameters
+
+Reads and maintains the following parameters on the ROS server
+
+- \b "~dist_to_goal" : \b [double] Minimum safety distance to goal target min: 0.1, default: 0.2, max: 1.0
+

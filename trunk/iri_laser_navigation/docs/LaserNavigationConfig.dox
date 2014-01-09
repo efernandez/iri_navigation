@@ -1,0 +1,12 @@
+\subsubsection parameters ROS parameters
+
+Reads and maintains the following parameters on the ROS server
+
+- \b "~bag_path" : \b [str] Bag path min: , default: map.bag, max: 
+- \b "~scan_topic" : \b [str] Bag LaserScan topic min: , default: /teo/front_laser/scan, max: 
+- \b "~scan_path_frame_id" : \b [str] Scan path frame id min: , default: /teo/front_laser, max: 
+- \b "~pose_topic" : \b [str] Bag Odom topic min: , default: /teo/front_icp_odom, max: 
+- \b "~goal_frame" : \b [str] Goal frame min: , default: /map, max: 
+- \b "~publish_all" : \b [bool] Publish all map min: False, default: False, max: True
+- \b "~preview_map" : \b [bool] Preview Map min: False, default: False, max: True
+

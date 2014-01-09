@@ -1,0 +1,7 @@
+\subsubsection usage Usage
+\verbatim
+<node name="PeopleFollowerAlgorithm" pkg="iri_people_follower" type="PeopleFollowerAlgorithm">
+  <param name="dist_to_goal" type="double" value="0.2" />
+</node>
+\endverbatim
+

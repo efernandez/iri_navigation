@@ -1,0 +1,13 @@
+<launch>
+
+<node name="checkpoint_manager"
+       pkg="iri_checkpoint_nav"
+      type="checkpoint_manager"
+    output="screen"/>
+
+<node name="checkpoint_nav_goals_cmd"
+       pkg="iri_checkpoint_nav"
+      type="checkpoint_nav_goals_cmd"
+     output="screen"/>
+
+</launch>

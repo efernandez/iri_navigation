@@ -1,0 +1,20 @@
+<package>
+  <description brief="iri_people_follower_client">
+
+     iri_people_follower_client
+
+  </description>
+  <author></author>
+  <license>LGPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/iri_people_follower_client</url>
+  <depend package="roscpp"/>
+  <depend package="iri_base_algorithm"/>
+  <depend package="geometry_msgs"/>
+  <depend package="iri_people_tracking"/>
+  <depend package="actionlib"/>
+  <depend package="iri_nav_msgs"/>
+
+</package>
+
+

@@ -1,0 +1,25 @@
+<launch>
+  <!-- leuze laser -->
+  <node pkg ="iri_leuze_laser"
+        type="iri_leuze_laser"
+        name="leuze_laser"
+        output="screen">
+    <remap from="/leuze_laser/status"
+             to="/leuze_speed_limit/leuze_status"/>
+    <param name="frame_id"     value="/leuze_laser"/>
+    <param name="serial_port"  value="/dev/ttyUSB0" />
+  </node>
+
+  <!-- Leuze speed limit -->
+  <node pkg ="iri_leuze_speed_limit"
+        type="iri_leuze_speed_limit"
+        name="leuze_speed_limit"
+        output="screen">
+    <remap from="/leuze_speed_limit/change_zone"
+             to="/leuze_laser/change_wp_pair"/>
+    <param name="zone1_max_speed" value="0.1"/>
+    <param name="zone2_max_speed" value="0.2"/>
+    <param name="zone3_max_speed" value="0.3"/>
+    <param name="zone4_max_speed" value="0.4"/>
+  </node>
+</launch>

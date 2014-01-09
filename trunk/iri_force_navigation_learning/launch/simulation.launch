@@ -1,0 +1,60 @@
+<!-- -->
+<launch>
+
+  <arg name="rviz"     default="True" />
+
+   <node pkg="tf" type="static_transform_publisher" name="link1_broadcaster"
+		args=" 0 0 0 0 0 0 /map /world 100" />
+
+  <node pkg ="iri_people_simulation"
+        type="iri_people_simulation"
+        name="iri_people_simulation"
+         >
+		<param name="number_persons" value="25"/>
+    	<param name="force_map_path" value="$(find iri_people_simulation)/map/force_map_sim.txt" />
+    	<param name="destination_map_path" value="$(find iri_people_simulation)/map/map_destinations_learning.txt" />
+		<remap from="/iri_people_simulation/robot_pose"
+               to="/iri_force_navigation_learning/robot_simulated_pose" />
+  </node>
+  
+<!--
+  <node pkg ="wiimote"
+          type="wiimote_node.py"
+          name="joy"
+          respawn="true"/>
+-->
+
+
+ 	<node name="map_server" 
+		pkg="map_server" 
+		type="map_server" 
+		args="$(find iri_people_simulation)/map/sim.yaml">
+			<param name="frame_id" value="/map" />			
+	</node>  
+
+
+  <!-- People prediction node -->
+  <node pkg ="iri_force_navigation_learning"
+        type="iri_force_navigation_learning"
+        name="iri_force_navigation_learning" 
+		output="screen">
+		<param name="robot_x_ini" value="6.0"/>
+		<param name="robot_y_ini" value="5.0"/>
+    	<param name="force_map_path" value="$(find iri_people_simulation)/map/force_map_sim.txt" />
+    	<param name="destination_map_path" value="$(find iri_people_simulation)/map/map_destinations_learning.txt" />
+		<remap from="/iri_force_navigation_learning/tracks"
+               to="/iri_people_simulation/tracks" />
+  </node>
+
+
+
+  <node pkg ="rviz" 
+        name="rviz" 
+        type="rviz" 
+		if="$(arg rviz)"
+        args="-d $(find iri_force_navigation_learning)/config/simulation.vcg"
+         />
+
+</launch>
+
+

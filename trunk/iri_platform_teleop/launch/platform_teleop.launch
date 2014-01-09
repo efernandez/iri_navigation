@@ -1,0 +1,18 @@
+<launch>
+
+  <!-- ros wiimote node -->
+  <node pkg="wiimote"
+        type="wiimote_node.py"
+        name="joy"
+        respawn="true"/>
+
+  <!-- wiimote teleop -->
+  <node pkg="iri_platform_teleop"
+        type="iri_platform_teleop"
+        name="iri_platform_teleop"
+        output="screen">
+    <remap from="/iri_platform_teleop/joy"
+            to="/joy" />
+  </node>
+
+</launch>
