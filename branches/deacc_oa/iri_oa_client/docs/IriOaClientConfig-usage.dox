@@ -1,6 +1,0 @@
-\subsubsection usage Usage
-\verbatim
-<node name="IriOaClientAlgorithm" pkg="iri_oa_client" type="IriOaClientAlgorithm">
-</node>
-\endverbatim
-

@@ -1,5 +1,0 @@
-sensor_msgs/LaserScan scan_ref
-sensor_msgs/LaserScan scan_sens
-geometry_msgs/Pose pose_ref
----
-geometry_msgs/PoseWithCovarianceStamped pose

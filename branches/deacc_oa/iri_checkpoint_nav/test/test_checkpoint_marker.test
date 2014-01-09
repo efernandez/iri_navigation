@@ -1,5 +1,0 @@
-<launch>
-  <test test-name="test_checkpoint_marker"
-        pkg="iri_checkpoint_nav"
-        type="checkpoint_marker_test"/>
-</launch>

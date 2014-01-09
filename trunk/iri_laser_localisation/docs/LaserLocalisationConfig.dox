@@ -1,9 +1,0 @@
-\subsubsection parameters ROS parameters
-
-Reads and maintains the following parameters on the ROS server
-
-- \b "~map_frame" : \b [str] Map frame min: , default: /map, max: 
-- \b "~odom_frame" : \b [str] Odom frame min: , default: /teo/odom, max: 
-- \b "~base_frame" : \b [str] Base frame min: , default: /teo/base_footprint, max: 
-- \b "~continuous" : \b [bool] Continuous localisation min: False, default: False, max: True
-

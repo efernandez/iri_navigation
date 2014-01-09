@@ -1,6 +1,0 @@
-byte START_NAV=0
-byte RESET_CHECKPOINTS=1
-
-byte action
----
-bool success

@@ -1,6 +1,0 @@
-<launch>
-  <node pkg="iri_checkpoint_nav" type="checkpoint_manager" name="checkpoint_manager" output="screen" />
-  <test test-name="test_checkpoint_manager"
-        pkg="iri_checkpoint_nav"
-        type="checkpoint_manager_test"/>
-</launch>

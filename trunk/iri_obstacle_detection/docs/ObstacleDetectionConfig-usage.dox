@@ -1,6 +1,0 @@
-\subsubsection usage Usage
-\verbatim
-<node name="ObstacleDetectionAlgorithm" pkg="iri_obstacle_detection" type="ObstacleDetectionAlgorithm">
-</node>
-\endverbatim
-
