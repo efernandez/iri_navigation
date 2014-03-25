@@ -1,0 +1,16 @@
+<package>
+  <description brief="iri_nav_msgs">
+
+     iri_nav_msgs
+
+  </description>
+  <author></author>
+  <license>LGPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/iri_nav_msgs</url>
+
+  <depend package="actionlib"/>
+  <depend package="geometry_msgs"/>
+</package>
+
+
