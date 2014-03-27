@@ -44,6 +44,12 @@
   <!--                   Place run dependencies here                      -->
   <!-- ****************************************************************** -->
   <!--<run_depend>message_runtime</run_depend> -->
+  <run_depend>iri_base_algorithm</run_depend>
+  <run_depend>std_srvs</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>visualization_msgs</run_depend>
+  <run_depend>iri_perception_msgs</run_depend>
 
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->

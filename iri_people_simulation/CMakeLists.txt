@@ -2,7 +2,7 @@
 #                 The new CMakeLists.txt file starts here                
 # ******************************************************************** 
 cmake_minimum_required(VERSION 2.8.3)
-project(iri_people_simulator)
+project(iri_people_simulation)
 
 ## Find catkin macros and libraries
 # ******************************************************************** 
