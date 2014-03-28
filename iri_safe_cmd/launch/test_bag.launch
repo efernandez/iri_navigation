@@ -1,0 +1,23 @@
+<!-- This is a test for iri_robot_pose_ekf using a bag recorded with TEO robot-->
+<launch>
+
+  <arg name="bag" default="default.bag"/>
+  <param name="/use_sim_time" value="True"/>
+
+  <node pkg="rosbag" type="play" name="rosbag"  output="screen" args = "$(find bags)/$(arg bag) --pause --clock">
+  </node>
+
+
+  <node pkg="iri_safe_cmd"
+        type="iri_safe_cmd"
+        name="iri_safe_cmd"
+        output="screen"
+        >
+        <remap from="~cmd_vel"     to="/teo/segway/cmd_vel"/>
+        <remap from="~rear_laser"  to="/teo/sensors/rear_laser"/>
+        <remap from="~front_laser" to="/teo/sensors/front_laser"/>
+  </node>
+
+  
+</launch>
+

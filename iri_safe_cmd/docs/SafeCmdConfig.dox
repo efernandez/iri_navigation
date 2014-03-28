@@ -1,0 +1,6 @@
+\subsubsection parameters ROS parameters
+
+Reads and maintains the following parameters on the ROS server
+
+- \b "~unsafe" : \b [bool] Not use the safe module min: False, default: False, max: True
+
