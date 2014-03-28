@@ -1,43 +1,101 @@
-cmake_minimum_required(VERSION 2.4.6)
-include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
+cmake_minimum_required(VERSION 2.8.3)
+project(iri_safe_cmd)
 
-set(PROJECT_NAME safe_cmd_alg_node)
+## Find catkin macros and libraries
+find_package(catkin REQUIRED)
+# ******************************************************************** 
+#                 Add catkin additional components here
+# ******************************************************************** 
+find_package(catkin REQUIRED COMPONENTS geometry_msgs sensor_msgs iri_base_algorithm)
 
-# Set the build type.  Options are:
-#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
-#  Debug          : w/ debug symbols, w/o optimization
-#  Release        : w/o debug symbols, w/ optimization
-#  RelWithDebInfo : w/ debug symbols, w/ optimization
-#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-#set(ROS_BUILD_TYPE RelWithDebInfo)
+## System dependencies are found with CMake's conventions
+# find_package(Boost REQUIRED COMPONENTS system)
 
-rosbuild_init()
+# ******************************************************************** 
+#           Add system and labrobotica dependencies here
+# ******************************************************************** 
+find_package(iriutils REQUIRED)
 
-#set the default path for built executables to the "bin" directory
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-#set the default path for built libraries to the "lib" directory
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+# ******************************************************************** 
+#           Add topic, service and action definition here
+# ******************************************************************** 
+## Generate messages in the 'msg' folder
+# add_message_files(
+#   FILES
+#   Message1.msg
+#   Message2.msg
+# )
 
-#uncomment if you have defined messages
-#rosbuild_genmsg()
-#uncomment if you have defined services
-#rosbuild_gensrv()
+## Generate services in the 'srv' folder
+# add_service_files(
+#   FILES
+#   Service1.srv
+#   Service2.srv
+# )
 
-# added to include support for dynamic reconfiguration
-rosbuild_find_ros_package(dynamic_reconfigure)
-include(${dynamic_reconfigure_PACKAGE_PATH}/cmake/cfgbuild.cmake)
-gencfg()
-# end dynamic reconfiguration
+## Generate actions in the 'action' folder
+# add_action_files(
+#   FILES
+#   Action1.action
+#   Action2.action
+# )
 
-FIND_PACKAGE(iriutils REQUIRED)
+## Generate added messages and services with any dependencies listed here
+# generate_messages(
+#   DEPENDENCIES
+#   std_msgs  # Or other packages containing msgs
+# )
 
-INCLUDE_DIRECTORIES(${iriutils_INCLUDE_DIR} ./include)
+# ******************************************************************** 
+#                 Add the dynamic reconfigure file 
+# ******************************************************************** 
+generate_dynamic_reconfigure_options(cfg/SafeCmd.cfg)
 
-#common commands for building c++ executables and libraries
-#rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
-#target_link_libraries(${PROJECT_NAME} another_library)
-#rosbuild_add_boost_directories()
-#rosbuild_link_boost(${PROJECT_NAME} thread)
-rosbuild_add_executable(${PROJECT_NAME} src/safe_cmd_alg.cpp src/safe_cmd_alg_node.cpp)
+# ******************************************************************** 
+#                 Add run time dependencies here
+# ******************************************************************** 
+catkin_package(
+#  INCLUDE_DIRS 
+#  LIBRARIES 
+# ******************************************************************** 
+#            Add ROS and IRI ROS run time dependencies
+# ******************************************************************** 
+  CATKIN_DEPENDS geometry_msgs sensor_msgs iri_base_algorithm
+# ******************************************************************** 
+#      Add system and labrobotica run time dependencies here
+# ******************************************************************** 
+  DEPENDS iriutils
+)
 
+###########
+## Build ##
+###########
+
+# ******************************************************************** 
+#                   Add the include directories 
+# ******************************************************************** 
+include_directories(include)
+include_directories(${catkin_INCLUDE_DIRS})
+include_directories(${iriutils_INCLUDE_DIR})
+
+## Declare a cpp library
+# add_library(${PROJECT_NAME} <list of source files>)
+
+## Declare a cpp executable
+add_executable(${PROJECT_NAME} src/safe_cmd_alg.cpp src/safe_cmd_alg_node.cpp)
+
+# ******************************************************************** 
+#                   Add the libraries
+# ******************************************************************** 
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${iriutils_LIBRARY})
+
+# ******************************************************************** 
+#               Add message headers dependencies 
+# ******************************************************************** 
+# add_dependencies(${PROJECT_NAME} <msg_package_name>_cpp)
+# ******************************************************************** 
+#               Add dynamic reconfigure dependencies 
+# ******************************************************************** 
+add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS})
+
