@@ -93,7 +93,7 @@ target_link_libraries(${PROJECT_NAME} ${iriutils_LIBRARY})
 # ******************************************************************** 
 #               Add message headers dependencies 
 # ******************************************************************** 
-# add_dependencies(${PROJECT_NAME} <msg_package_name>_cpp)
+# add_dependencies(${PROJECT_NAME} <msg_package_name>_generate_messages_cpp)
 # ******************************************************************** 
 #               Add dynamic reconfigure dependencies 
 # ******************************************************************** 

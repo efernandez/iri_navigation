@@ -101,8 +101,8 @@ target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${iriutils_LIBRARY} ${
 # ******************************************************************** 
 #               Add message headers dependencies 
 # ******************************************************************** 
-# add_dependencies(${PROJECT_NAME} <msg_package_name>_cpp)
-add_dependencies(${PROJECT_NAME} iri_perception_msgs_cpp)
+# add_dependencies(${PROJECT_NAME} <msg_package_name>_generate_messages_cpp)
+add_dependencies(${PROJECT_NAME} iri_perception_msgs_generate_messages_cpp)
 # ******************************************************************** 
 #               Add dynamic reconfigure dependencies 
 # ******************************************************************** 
