@@ -66,10 +66,10 @@ catkin_package(
 ###########
 # This hack is only to allow the rosmsg tool to locate the messages genererated by the actions, so that the IRI scripts can 
 # locate them when adding actions to a node.
-add_custom_target(copy_action_msgs ALL)
-add_custom_command(TARGET copy_action_msgs POST_BUILD 
+add_custom_target(iri_nav_msgs_copy_action_msgs ALL)
+add_custom_command(TARGET iri_nav_msgs_copy_action_msgs POST_BUILD 
                    COMMAND rsync -aq ${CATKIN_DEVEL_PREFIX}/share/${PROJECT_NAME}/msg/ ${CMAKE_CURRENT_SOURCE_DIR}/msg/)
-add_dependencies(copy_action_msgs iri_nav_msgs_generate_messages_cpp)
+add_dependencies(iri_nav_msgs_copy_action_msgs iri_nav_msgs_generate_messages_cpp)
 
 # ******************************************************************** 
 #                   Add the include directories 
