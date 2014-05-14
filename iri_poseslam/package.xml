@@ -68,7 +68,6 @@
   <build_depend>iri_base_algorithm</build_depend>
   <build_depend>geometry_msgs</build_depend>
   <build_depend>sensor_msgs</build_depend>
-  <build_depend>iri_nav_msgs</build_depend>
   <build_depend>iri_laser_icp</build_depend>
   <build_depend>laser_geometry</build_depend>
   <build_depend>pcl_ros</build_depend>
@@ -82,7 +81,6 @@
   <run_depend>iri_base_algorithm</run_depend>
   <run_depend>geometry_msgs</run_depend>
   <run_depend>sensor_msgs</run_depend>
-  <run_depend>iri_nav_msgs</run_depend>
   <run_depend>iri_laser_icp</run_depend>
   <run_depend>laser_geometry</run_depend>
   <run_depend>pcl_ros</run_depend>

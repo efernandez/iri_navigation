@@ -7,7 +7,7 @@ find_package(catkin REQUIRED)
 # ******************************************************************** 
 #                 Add catkin additional components here
 # ******************************************************************** 
-find_package(catkin REQUIRED COMPONENTS message_generation iri_base_algorithm geometry_msgs sensor_msgs iri_nav_msgs iri_laser_icp laser_geometry pcl_ros)
+find_package(catkin REQUIRED COMPONENTS message_generation iri_base_algorithm geometry_msgs sensor_msgs iri_laser_icp laser_geometry pcl_ros)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -62,7 +62,7 @@ catkin_package(
 # ******************************************************************** 
 #            Add ROS and IRI ROS run time dependencies
 # ******************************************************************** 
-  CATKIN_DEPENDS iri_base_algorithm geometry_msgs sensor_msgs iri_nav_msgs iri_laser_icp laser_geometry pcl_ros
+  CATKIN_DEPENDS iri_base_algorithm geometry_msgs sensor_msgs iri_laser_icp laser_geometry pcl_ros
 # ******************************************************************** 
 #      Add system and labrobotica run time dependencies here
 # ******************************************************************** 
