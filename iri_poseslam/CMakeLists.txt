@@ -16,7 +16,6 @@ find_package(catkin REQUIRED COMPONENTS message_generation iri_base_algorithm ge
 #           Add system and labrobotica dependencies here
 # ******************************************************************** 
 find_package(Eigen REQUIRED)
-find_package(iriutils REQUIRED)
 find_package(poseSLAM REQUIRED)
 
 # ******************************************************************** 
@@ -66,7 +65,7 @@ catkin_package(
 # ******************************************************************** 
 #      Add system and labrobotica run time dependencies here
 # ******************************************************************** 
-  DEPENDS iriutils poseSLAM Eigen
+  DEPENDS poseSLAM Eigen
 )
 
 ###########
@@ -79,7 +78,6 @@ catkin_package(
 include_directories(include)
 include_directories(${catkin_INCLUDE_DIRS})
 include_directories(${EIGEN_INCLUDE_DIR})
-include_directories(${iriutilsINCLUDE_DIR})
 include_directories(${poseSLAM_INCLUDE_DIR})
 
 ## Declare a cpp library
@@ -98,20 +96,29 @@ add_executable(trajectory_broadcaster          src/trajectory_broadcaster_alg.cp
 # ******************************************************************** 
 #                   Add the libraries
 # ******************************************************************** 
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${EIGEN_LIBRARY} ${iriutils_LIBRARY} ${poseSLAM_LIBRARY})
-target_link_libraries(odom_2_odomrel ${catkin_LIBRARIES} ${EIGEN_LIBRARY} ${iriutils_LIBRARY} ${poseSLAM_LIBRARY})
-target_link_libraries(sensors_2_link ${catkin_LIBRARIES} ${EIGEN_LIBRARY} ${iriutils_LIBRARY} ${poseSLAM_LIBRARY})
-target_link_libraries(trajectory_scans_2_occgrid ${catkin_LIBRARIES} ${EIGEN_LIBRARY} ${iriutils_LIBRARY} ${poseSLAM_LIBRARY})
-target_link_libraries(trajectory_scans_2_pointcloud ${catkin_LIBRARIES} ${EIGEN_LIBRARY} ${iriutils_LIBRARY} ${poseSLAM_LIBRARY})
-target_link_libraries(trajectory_3Dscans_2_pointcloud ${catkin_LIBRARIES} ${EIGEN_LIBRARY} ${iriutils_LIBRARY} ${poseSLAM_LIBRARY})
-target_link_libraries(trajectory_2_markers ${catkin_LIBRARIES} ${EIGEN_LIBRARY} ${iriutils_LIBRARY} ${poseSLAM_LIBRARY})
-target_link_libraries(trajectory_broadcaster ${catkin_LIBRARIES} ${EIGEN_LIBRARY} ${iriutils_LIBRARY} ${poseSLAM_LIBRARY})
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${EIGEN_LIBRARY} ${poseSLAM_LIBRARY})
+target_link_libraries(odom_2_odomrel ${catkin_LIBRARIES} ${EIGEN_LIBRARY} ${poseSLAM_LIBRARY})
+target_link_libraries(sensors_2_link ${catkin_LIBRARIES} ${EIGEN_LIBRARY} ${poseSLAM_LIBRARY})
+target_link_libraries(trajectory_scans_2_occgrid ${catkin_LIBRARIES} ${EIGEN_LIBRARY} ${poseSLAM_LIBRARY})
+target_link_libraries(trajectory_scans_2_pointcloud ${catkin_LIBRARIES} ${EIGEN_LIBRARY} ${poseSLAM_LIBRARY})
+target_link_libraries(trajectory_3Dscans_2_pointcloud ${catkin_LIBRARIES} ${EIGEN_LIBRARY} ${poseSLAM_LIBRARY})
+target_link_libraries(trajectory_2_markers ${catkin_LIBRARIES} ${EIGEN_LIBRARY} ${poseSLAM_LIBRARY})
+target_link_libraries(trajectory_broadcaster ${catkin_LIBRARIES} ${EIGEN_LIBRARY} ${poseSLAM_LIBRARY})
 
 
 # ******************************************************************** 
 #               Add message headers dependencies 
 # ******************************************************************** 
-# add_dependencies(${PROJECT_NAME} <msg_package_name>_cpp)
+ add_dependencies(${PROJECT_NAME} iri_laser_icp_generate_messages_cpp)
+ add_dependencies(${PROJECT_NAME} iri_poseslam_generate_messages_cpp)
+ add_dependencies(sensors_2_link iri_laser_icp_generate_messages_cpp)
+ add_dependencies(sensors_2_link iri_poseslam_generate_messages_cpp)
+ add_dependencies(trajectory_scans_2_occgrid iri_poseslam_generate_messages_cpp)
+ add_dependencies(trajectory_scans_2_pointcloud iri_poseslam_generate_messages_cpp)
+ add_dependencies(trajectory_3Dscans_2_pointcloud iri_poseslam_generate_messages_cpp)
+ add_dependencies(trajectory_2_markers iri_poseslam_generate_messages_cpp)
+ add_dependencies(trajectory_broadcaster iri_poseslam_generate_messages_cpp)
+
 # ******************************************************************** 
 #               Add dynamic reconfigure dependencies 
 # ******************************************************************** 
