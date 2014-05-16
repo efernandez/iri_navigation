@@ -142,7 +142,7 @@ void TrajectoryScans2OccGridAlgNode::update_trajectory_scans(const iri_poseslam:
   // Add the lasers of the new trajectory poses
   uint N_poses = (publish_redundant_ ? trajectory.poses.size() : trajectory.states_2_steps.size());
 
-  ROS_DEBUG("TR 2 OCCGRID: update traj scans: N_poses = %i - trajectory_scans_.size() = %lu", N_poses, trajectory_scans_.size());
+  ROS_DEBUG("TR 2 OCCGRID: update traj scans: N_poses = %i - trajectory_scans_.size() = %u", N_poses, trajectory_scans_.size());
 
   while (N_poses > trajectory_scans_.size())
   {
@@ -188,7 +188,7 @@ void TrajectoryScans2OccGridAlgNode::recompute_occupancy_grid(const iri_poseslam
   // Update the logodds_grid_
   for (uint i = from_step; i < trajectory.poses.size(); i++)
   {
-    //ROS_INFO("TR 2 OCCGRID: scan step: %i\ntrajectory.poses.size() = %lu\ntrajectory.steps_2_states.size() = %lu", i, trajectory.poses.size(), trajectory.steps_2_states.size());
+    //ROS_INFO("TR 2 OCCGRID: scan step: %i\ntrajectory.poses.size() = %u\ntrajectory.steps_2_states.size() = %u", i, trajectory.poses.size(), trajectory.steps_2_states.size());
     if (publish_redundant_ || trajectory.steps_2_states.at(i) != -1)
     {
       ROS_DEBUG("TR 2 OCCGRID: Adding scan from pose: %u - %f, %f, %f", i,
