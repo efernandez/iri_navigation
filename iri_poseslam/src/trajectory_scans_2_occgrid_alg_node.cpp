@@ -316,7 +316,7 @@ Vector2i TrajectoryScans2OccGridAlgNode::vector2cell(const Vector2f& p)
 void TrajectoryScans2OccGridAlgNode::update_occupancy_grid()
 {
   Array<double, Dynamic, Dynamic, ColMajor> occupancy_probability(n_cells_(0), n_cells_(1));
-  occupancy_probability = 100 * (1 - 1 / (1 + logodds_grid_.exp()));
+  occupancy_probability = 100 * (1 - (1 + logodds_grid_.exp()).cwiseInverse());
 
   std::copy(occupancy_probability.data(), occupancy_probability.data() + occupancy_probability.size(), occupancy_grid_.data.begin());
   //ROS_INFO("TR 2 OCCGRID: OccupancyGrid updated! occupancy_probability.size() = %i - occupancy_grid_.data.size() = %i",occupancy_probability.size(),occupancy_grid_.data.size());
