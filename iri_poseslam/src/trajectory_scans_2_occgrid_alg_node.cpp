@@ -142,7 +142,7 @@ void TrajectoryScans2OccGridAlgNode::update_trajectory_scans(const iri_poseslam:
   // Add the lasers of the new trajectory poses
   uint N_poses = (publish_redundant_ ? trajectory.poses.size() : trajectory.states_2_steps.size());
 
-  ROS_DEBUG("TR 2 OCCGRID: update traj scans: N_poses = %i - trajectory_scans_.size() = %u", N_poses, trajectory_scans_.size());
+  ROS_DEBUG_STREAM("TR 2 OCCGRID: update traj scans: N_poses = "<< N_poses <<" - trajectory_scans_.size() = " << trajectory_scans_.size());
 
   while (N_poses > trajectory_scans_.size())
   {

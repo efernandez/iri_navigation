@@ -7,7 +7,7 @@ find_package(catkin REQUIRED)
 # ******************************************************************** 
 #                 Add catkin additional components here
 # ******************************************************************** 
-find_package(catkin REQUIRED COMPONENTS message_generation iri_base_algorithm geometry_msgs sensor_msgs iri_laser_icp laser_geometry pcl_ros)
+find_package(catkin REQUIRED COMPONENTS message_generation iri_base_algorithm geometry_msgs sensor_msgs iri_laser_icp pcl_ros laser_geometry)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -76,9 +76,10 @@ catkin_package(
 #                   Add the include directories 
 # ******************************************************************** 
 include_directories(include)
+include_directories(${EIGEN_INCLUDE_DIR}) # include this before catkin to be sure it finds the local eigen version
 include_directories(${catkin_INCLUDE_DIRS})
-include_directories(${EIGEN_INCLUDE_DIR})
-include_directories(${poseSLAM_INCLUDE_DIR})
+include_directories(${poseSLAM_INCLUDE_DIRS})
+
 
 ## Declare a cpp library
 # add_library(${PROJECT_NAME} <list of source files>)
@@ -96,14 +97,14 @@ add_executable(trajectory_broadcaster          src/trajectory_broadcaster_alg.cp
 # ******************************************************************** 
 #                   Add the libraries
 # ******************************************************************** 
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${EIGEN_LIBRARY} ${poseSLAM_LIBRARY})
-target_link_libraries(odom_2_odomrel ${catkin_LIBRARIES} ${EIGEN_LIBRARY} ${poseSLAM_LIBRARY})
-target_link_libraries(sensors_2_link ${catkin_LIBRARIES} ${EIGEN_LIBRARY} ${poseSLAM_LIBRARY})
-target_link_libraries(trajectory_scans_2_occgrid ${catkin_LIBRARIES} ${EIGEN_LIBRARY} ${poseSLAM_LIBRARY})
-target_link_libraries(trajectory_scans_2_pointcloud ${catkin_LIBRARIES} ${EIGEN_LIBRARY} ${poseSLAM_LIBRARY})
-target_link_libraries(trajectory_3Dscans_2_pointcloud ${catkin_LIBRARIES} ${EIGEN_LIBRARY} ${poseSLAM_LIBRARY})
-target_link_libraries(trajectory_2_markers ${catkin_LIBRARIES} ${EIGEN_LIBRARY} ${poseSLAM_LIBRARY})
-target_link_libraries(trajectory_broadcaster ${catkin_LIBRARIES} ${EIGEN_LIBRARY} ${poseSLAM_LIBRARY})
+target_link_libraries(${PROJECT_NAME} ${EIGEN_LIBRARY} ${poseSLAM_LIBRARY} ${catkin_LIBRARIES})
+target_link_libraries(odom_2_odomrel ${EIGEN_LIBRARY} ${catkin_LIBRARIES})
+target_link_libraries(sensors_2_link ${EIGEN_LIBRARY} ${catkin_LIBRARIES})
+target_link_libraries(trajectory_scans_2_occgrid ${EIGEN_LIBRARY} ${catkin_LIBRARIES})
+target_link_libraries(trajectory_scans_2_pointcloud ${EIGEN_LIBRARY} ${catkin_LIBRARIES})
+target_link_libraries(trajectory_3Dscans_2_pointcloud ${EIGEN_LIBRARY} ${catkin_LIBRARIES})
+target_link_libraries(trajectory_2_markers ${EIGEN_LIBRARY} ${catkin_LIBRARIES} )
+target_link_libraries(trajectory_broadcaster ${EIGEN_LIBRARY} ${catkin_LIBRARIES} )
 
 
 # ******************************************************************** 
