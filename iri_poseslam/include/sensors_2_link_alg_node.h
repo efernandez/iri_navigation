@@ -98,7 +98,7 @@ class Sensors2LinkAlgNode : public algorithm_base::IriBaseAlgorithm<Sensors2Link
     std::string laser_frame_id_, base_frame_id_;
     bool tf_ready_;
     //Parameters
-    bool online_mode_;
+    bool online_mode_, allow_slipping_;
     double ICP_covariance_correction_factor_;
     uint fusion_mode_, N_scans_discard_;
     

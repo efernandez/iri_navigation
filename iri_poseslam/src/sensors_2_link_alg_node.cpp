@@ -11,6 +11,7 @@ algorithm_base::IriBaseAlgorithm<Sensors2LinkAlgorithm>()
   public_node_handle_.param<double>("ICP_covariance_correction_factor", ICP_covariance_correction_factor_, 100.0);
   public_node_handle_.param<std::string>("base_frame_id", base_frame_id_, "/teo/base_link");
   public_node_handle_.param<std::string>("laser_frame_id", laser_frame_id_, "/teo/front_laser");
+  public_node_handle_.param<bool>("allow_slipping", allow_slipping_, false);
   fusion_mode_ = uint(fusion_mode);
   N_scans_discard_ = uint(N_scans_discard);
   ROS_DEBUG("SENSORS 2 LINK: Config updated");
@@ -117,7 +118,7 @@ void Sensors2LinkAlgNode::odom_relative_callback(const nav_msgs::Odometry::Const
     stopped_since_last_odom_ = false;
 
   // If not stopped
-  if (!stopped_since_last_odom_)
+  if (!stopped_since_last_odom_ || allow_slipping_)
   {
     // Odometry
     d_local_ = pose_2_vector(msg->pose.pose);
