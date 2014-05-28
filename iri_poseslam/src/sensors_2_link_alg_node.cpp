@@ -381,8 +381,7 @@ geometry_msgs::PoseWithCovarianceStamped Sensors2LinkAlgNode::odometry_fusion(co
                  get_relative_pose_srv_.request.prior_d.position.x, get_relative_pose_srv_.request.prior_d.position.y, tf::getYaw(get_relative_pose_srv_.request.prior_d.orientation),
                  get_relative_pose_srv_.response.pose_rel.pose.pose.position.x, get_relative_pose_srv_.response.pose_rel.pose.pose.position.y, tf::getYaw(get_relative_pose_srv_.response.pose_rel.pose.pose.orientation),
                  odom_ICP(0), odom_ICP(1), odom_ICP(2));
-      if (!is_semiPD(odom_ICP_cov)) 
-        std::cout << "ERROR: ICP transformed covariance is not PD!" << std::endl << odom_ICP_cov << std::endl;
+      
 
       // FUSION
       switch (fusion_mode_)
@@ -409,13 +408,24 @@ geometry_msgs::PoseWithCovarianceStamped Sensors2LinkAlgNode::odometry_fusion(co
       // Mahalanobis distance (from odometry reading)
       double md = sqrt((odom_ICP - int_odom_rel).transpose() * (100 * int_odom_rel_cov).inverse() * (odom_ICP - int_odom_rel));
 
-      if (md > alg_.K_mahalanobis_ || 100 * int_odom_rel_cov.determinant() < odom_cov.determinant())
+      if (md > alg_.K_mahalanobis_)
       {
         odom = int_odom_rel;
         odom_cov = int_odom_rel_cov;
-        //ROS_WARN("SENSORS 2 LINK: ICP outlier detected in odometry! Changed to encoders+IMU odometry");
+        ROS_WARN("SENSORS 2 LINK: ICP outlier detected in odometry! Changed to encoders+IMU odometry");
       }
-        
+      else if (!is_semiPD(odom_ICP_cov)) 
+      {
+        odom = int_odom_rel;
+        odom_cov = int_odom_rel_cov;
+        ROS_WARN("SENSORS 2 LINK: ICP transformed covariance is not PD! Changed to encoders+IMU odometry");
+      }
+      else if (100 * int_odom_rel_cov.determinant() < odom_cov.determinant() || 100 * int_odom_rel_cov.maxCoeff() < odom_cov.maxCoeff() || odom_cov.maxCoeff() > 1e2)
+      {
+        odom = int_odom_rel;
+        odom_cov = int_odom_rel_cov;
+        ROS_WARN("SENSORS 2 LINK: Huge covariance in odometry! Changed to encoders+IMU odometry");
+      }
       //ROS_INFO("odom_ICP_cov:");
       //ROS_INFO_STREAM(odom_ICP_cov);
       //ROS_INFO("int_odom_rel_cov:");

@@ -145,6 +145,7 @@ void TrajectoryScans2PointcloudAlgNode::update_trajectory_scans(const iri_posesl
     {
       ROS_WARN("TR 2 PC: Any trajectory pose laser scan lost!");
       sensor_msgs::LaserScan empty_LaserScan;
+      empty_LaserScan.angle_increment = 0;
       empty_LaserScan.header = trajectory.poses.at(step_idx).header;
       trajectory_scans_.push_back(empty_LaserScan);
     }
@@ -180,7 +181,7 @@ void TrajectoryScans2PointcloudAlgNode::update_pointcloud(const iri_poseslam::Tr
                            trajectory.poses.at(i).pose.pose.position.y, 
                            tf::getYaw(trajectory.poses.at(i).pose.pose.orientation));
       sensor_msgs::LaserScan laser_scan = ( publish_redundant_ ? trajectory_scans_.at(i) : trajectory_scans_.at(trajectory.steps_2_states.at(i)) );
-      if (laser_scan.header.stamp == trajectory.poses.at(i).header.stamp)
+      if (laser_scan.header.stamp == trajectory.poses.at(i).header.stamp && laser_scan.angle_increment != 0)
         add_to_PointCloud_msg(laser_scan_to_point_cloud(laser_scan, trajectory.poses.at(i).pose.pose));
 
       else
