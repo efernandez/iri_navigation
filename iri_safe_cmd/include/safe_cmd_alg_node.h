@@ -61,6 +61,9 @@ class SafeCmdAlgNode : public algorithm_base::IriBaseAlgorithm<SafeCmdAlgorithm>
     void front_laser_callback(const sensor_msgs::LaserScan::ConstPtr& msg);
     CMutex front_laser_mutex_;
 
+    bool front_laser_received;
+    bool rear_laser_received;
+
     // [service attributes]
 
     // [client attributes]

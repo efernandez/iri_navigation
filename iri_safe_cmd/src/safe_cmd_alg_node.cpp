@@ -7,7 +7,9 @@ SafeCmdAlgNode::SafeCmdAlgNode(void) :
   max_vel_front_(7),
   max_vel_rear_(7),
   limit_vel_front_(7),
-  limit_vel_rear_(7)
+  limit_vel_rear_(7),
+  front_laser_received(false),
+  rear_laser_received(false)
 {
   //init class attributes if necessary
   loop_rate_ = 20;//in [Hz]
@@ -41,17 +43,22 @@ void SafeCmdAlgNode::mainNodeThread(void)
   
   if(!alg_.config_.unsafe)
   {
+    if(!this->front_laser_received || !this->rear_laser_received)
+      ROS_ERROR("SafeCmdAlgNode::mainNodeThread: laser/s not received");
+
     if(Twist_msg_.linear.x > fabs(max_vel_front_))
     {
       Twist_msg_.linear.x = fabs(max_vel_front_);
       ROS_WARN("heading to front obstacle, reducing velocity");
-    }  
+    }
 
     if(Twist_msg_.linear.x < -fabs(max_vel_rear_))
     {
       Twist_msg_.linear.x = -fabs(max_vel_rear_); 
       ROS_WARN("heading to rear obstacle, reducing velocity");
     }
+    this->front_laser_received = false;
+    this->rear_laser_received  = false;
   }
   // [fill srv structure and make request to the server]
   
@@ -102,6 +109,7 @@ void SafeCmdAlgNode::rear_laser_callback(const sensor_msgs::LaserScan::ConstPtr&
 
   max_vel_rear_ = std::min(compute_max_velocity_(msg),limit_vel_rear_);
   //ROS_INFO("Max vel r: %f",max_vel_rear_);
+  this->rear_laser_received = true;
 
   //unlock previously blocked shared variables 
   //this->alg_.unlock(); 
@@ -117,6 +125,7 @@ void SafeCmdAlgNode::front_laser_callback(const sensor_msgs::LaserScan::ConstPtr
 
   max_vel_front_ = std::min(compute_max_velocity_(msg),limit_vel_front_);
   //ROS_INFO("Max vel f: %f",max_vel_front_);
+  this->front_laser_received = true;
 
   //unlock previously blocked shared variables 
   //this->alg_.unlock(); 
@@ -132,7 +141,10 @@ void SafeCmdAlgNode::front_laser_callback(const sensor_msgs::LaserScan::ConstPtr
 void SafeCmdAlgNode::node_config_update(Config &config, uint32_t level)
 {
   alg_.lock();
-
+  this->collision_time_ = config.collision_time;
+  this->min_dist_ = config.min_dist;
+  this->limit_vel_front_ = config.limit_vel_front;
+  this->limit_vel_rear_ = config.limit_vel_rear;
   alg_.unlock();
 }
 
