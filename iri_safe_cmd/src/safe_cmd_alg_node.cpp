@@ -8,8 +8,8 @@ SafeCmdAlgNode::SafeCmdAlgNode(void) :
   max_vel_rear_(7),
   limit_vel_front_(7),
   limit_vel_rear_(7),
-  front_laser_received(false),
-  rear_laser_received(false)
+  front_laser_received_(false),
+  rear_laser_received_(false)
 {
   //init class attributes if necessary
   loop_rate_ = 20;//in [Hz]
@@ -18,8 +18,8 @@ SafeCmdAlgNode::SafeCmdAlgNode(void) :
   cmd_vel_safe_publisher_ = public_node_handle_.advertise<geometry_msgs::Twist>("cmd_vel_safe", 100);
   
   // [init subscribers]
-  cmd_vel_subscriber_ = public_node_handle_.subscribe("cmd_vel", 100, &SafeCmdAlgNode::cmd_vel_callback,this);
-  rear_laser_subscriber_ = public_node_handle_.subscribe("rear_laser", 100, &SafeCmdAlgNode::rear_laser_callback, this);
+  cmd_vel_subscriber_     = public_node_handle_.subscribe("cmd_vel", 100, &SafeCmdAlgNode::cmd_vel_callback,this);
+  rear_laser_subscriber_  = public_node_handle_.subscribe("rear_laser", 100, &SafeCmdAlgNode::rear_laser_callback, this);
   front_laser_subscriber_ = public_node_handle_.subscribe("front_laser", 100, &SafeCmdAlgNode::front_laser_callback, this);
   
   // [init services]
@@ -39,26 +39,31 @@ SafeCmdAlgNode::~SafeCmdAlgNode(void)
 void SafeCmdAlgNode::mainNodeThread(void)
 {
   // [fill msg structures]
-  //this->Twist_msg_.data = my_var;
+  //Twist_msg_.data = my_var;
   
   if(!alg_.config_.unsafe)
   {
-    if(!this->front_laser_received || !this->rear_laser_received)
-      ROS_ERROR("SafeCmdAlgNode::mainNodeThread: laser/s not received");
+    if(!front_laser_received_ || !rear_laser_received_)
+      ROS_FATAL("SafeCmdAlgNode::mainNodeThread: laser/s not received");
+    
+    front_laser_received_ = false;
+    rear_laser_received_  = false;
 
     if(Twist_msg_.linear.x > fabs(max_vel_front_))
     {
+      ROS_WARN_STREAM("heading to front obstacle, reducing velocity"<<fabs(max_vel_front_));
       Twist_msg_.linear.x = fabs(max_vel_front_);
-      ROS_WARN("heading to front obstacle, reducing velocity");
+      if(max_vel_front_==0)
+        Twist_msg_.angular.z = 0;
     }
 
     if(Twist_msg_.linear.x < -fabs(max_vel_rear_))
     {
-      Twist_msg_.linear.x = -fabs(max_vel_rear_); 
-      ROS_WARN("heading to rear obstacle, reducing velocity");
+      ROS_WARN_STREAM("heading to rear obstacle, reducing velocity"<<fabs(max_vel_rear_));
+      Twist_msg_.linear.x = -fabs(max_vel_rear_);
+      if(max_vel_rear_==0)
+        Twist_msg_.angular.z = 0;
     }
-    this->front_laser_received = false;
-    this->rear_laser_received  = false;
   }
   // [fill srv structure and make request to the server]
   
@@ -75,8 +80,8 @@ void SafeCmdAlgNode::cmd_vel_callback(const geometry_msgs::Twist::ConstPtr& msg)
   //ROS_INFO("SafeCmdAlgNode::cmd_vel_callback: New Message Received"); 
 
   //use appropiate mutex to shared variables if necessary 
-  //this->alg_.lock(); 
-  //this->cmd_vel_mutex_.enter();
+  //alg_.lock(); 
+  //cmd_vel_mutex_.enter();
 
   if(!alg_.config_.unsafe)
   {
@@ -96,40 +101,40 @@ void SafeCmdAlgNode::cmd_vel_callback(const geometry_msgs::Twist::ConstPtr& msg)
     Twist_msg_ = *msg;
 
   //unlock previously blocked shared variables 
-  //this->alg_.unlock(); 
-  //this->cmd_vel_mutex_.exit(); 
+  //alg_.unlock(); 
+  //cmd_vel_mutex_.exit(); 
 }
 void SafeCmdAlgNode::rear_laser_callback(const sensor_msgs::LaserScan::ConstPtr& msg) 
 { 
   //ROS_INFO("SafeCmdAlgNode::rear_laser_callback: New Message Received"); 
 
   //use appropiate mutex to shared variables if necessary 
-  //this->alg_.lock(); 
-  //this->rear_laser_mutex_.enter(); 
+  //alg_.lock(); 
+  //rear_laser_mutex_.enter(); 
 
   max_vel_rear_ = std::min(compute_max_velocity_(msg),limit_vel_rear_);
+  rear_laser_received_ = true;
   //ROS_INFO("Max vel r: %f",max_vel_rear_);
-  this->rear_laser_received = true;
 
   //unlock previously blocked shared variables 
-  //this->alg_.unlock(); 
-  //this->rear_laser_mutex_.exit(); 
+  //alg_.unlock(); 
+  //rear_laser_mutex_.exit(); 
 }
 void SafeCmdAlgNode::front_laser_callback(const sensor_msgs::LaserScan::ConstPtr& msg) 
 { 
   //ROS_INFO("SafeCmdAlgNode::front_laser_callback: New Message Received"); 
 
   //use appropiate mutex to shared variables if necessary 
-  //this->alg_.lock(); 
-  //this->front_laser_mutex_.enter(); 
+  //alg_.lock(); 
+  //front_laser_mutex_.enter(); 
 
   max_vel_front_ = std::min(compute_max_velocity_(msg),limit_vel_front_);
+  front_laser_received_ = true;
   //ROS_INFO("Max vel f: %f",max_vel_front_);
-  this->front_laser_received = true;
 
   //unlock previously blocked shared variables 
-  //this->alg_.unlock(); 
-  //this->front_laser_mutex_.exit(); 
+  //alg_.unlock(); 
+  //front_laser_mutex_.exit(); 
 }
 
 /*  [service callbacks] */
@@ -141,10 +146,10 @@ void SafeCmdAlgNode::front_laser_callback(const sensor_msgs::LaserScan::ConstPtr
 void SafeCmdAlgNode::node_config_update(Config &config, uint32_t level)
 {
   alg_.lock();
-  this->collision_time_ = config.collision_time;
-  this->min_dist_ = config.min_dist;
-  this->limit_vel_front_ = config.limit_vel_front;
-  this->limit_vel_rear_ = config.limit_vel_rear;
+  collision_time_  = config.collision_time;
+  min_dist_        = config.min_dist;
+  limit_vel_front_ = config.limit_vel_front;
+  limit_vel_rear_  = config.limit_vel_rear;
   alg_.unlock();
 }
 
@@ -160,13 +165,10 @@ int main(int argc,char *argv[])
 
 float SafeCmdAlgNode::compute_max_velocity_(const sensor_msgs::LaserScan::ConstPtr& scan) const
 {
-  float max_velocity;
+  float min_range    = *std::min_element( scan->ranges.begin(), scan->ranges.end() );
+  float max_velocity = 0;
 
-  float min_range = *std::min_element( scan->ranges.begin(), scan->ranges.end() );
-
-  if (min_range < min_dist_)
-    max_velocity = 0;
-  else
+  if (min_range >= min_dist_)
     max_velocity = min_range / collision_time_;
 
   return max_velocity;
