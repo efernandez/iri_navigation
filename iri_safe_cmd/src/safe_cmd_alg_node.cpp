@@ -43,15 +43,17 @@ void SafeCmdAlgNode::mainNodeThread(void)
   
   if(!alg_.config_.unsafe)
   {
-    if(!front_laser_received_ || !rear_laser_received_)
-      ROS_FATAL("SafeCmdAlgNode::mainNodeThread: laser/s not received");
+    if(!front_laser_received_)
+      ROS_FATAL("SafeCmdAlgNode::mainNodeThread: Front laser not received");
+    if(!rear_laser_received_)
+      ROS_FATAL("SafeCmdAlgNode::mainNodeThread: Rear laser not received");
     
     front_laser_received_ = false;
     rear_laser_received_  = false;
 
     if(Twist_msg_.linear.x > fabs(max_vel_front_))
     {
-      ROS_WARN_STREAM("heading to front obstacle, reducing velocity"<<fabs(max_vel_front_));
+      ROS_WARN_STREAM("heading to Front obstacle, reducing velocity"<<fabs(max_vel_front_));
       Twist_msg_.linear.x = fabs(max_vel_front_);
       if(max_vel_front_==0)
         Twist_msg_.angular.z = 0;
@@ -59,7 +61,7 @@ void SafeCmdAlgNode::mainNodeThread(void)
 
     if(Twist_msg_.linear.x < -fabs(max_vel_rear_))
     {
-      ROS_WARN_STREAM("heading to rear obstacle, reducing velocity"<<fabs(max_vel_rear_));
+      ROS_WARN_STREAM("heading to Rear obstacle, reducing velocity"<<fabs(max_vel_rear_));
       Twist_msg_.linear.x = -fabs(max_vel_rear_);
       if(max_vel_rear_==0)
         Twist_msg_.angular.z = 0;
@@ -146,10 +148,10 @@ void SafeCmdAlgNode::front_laser_callback(const sensor_msgs::LaserScan::ConstPtr
 void SafeCmdAlgNode::node_config_update(Config &config, uint32_t level)
 {
   alg_.lock();
-  collision_time_  = config.collision_time;
-  min_dist_        = config.min_dist;
-  limit_vel_front_ = config.limit_vel_front;
-  limit_vel_rear_  = config.limit_vel_rear;
+    collision_time_  = config.collision_time;
+    min_dist_        = config.min_dist;
+    limit_vel_front_ = config.limit_vel_front;
+    limit_vel_rear_  = config.limit_vel_rear;
   alg_.unlock();
 }
 
@@ -166,7 +168,11 @@ int main(int argc,char *argv[])
 float SafeCmdAlgNode::compute_max_velocity_(const sensor_msgs::LaserScan::ConstPtr& scan) const
 {
   float min_range    = *std::min_element( scan->ranges.begin(), scan->ranges.end() );
+  int   min_pos      = distance(scan->ranges.begin(),std::min_element( scan->ranges.begin(), scan->ranges.end() ));
   float max_velocity = 0;
+
+  ROS_DEBUG_STREAM("compute_max_velocity frame: " << scan->header.frame_id << 
+                   " min range: " << min_range << " at " << min_pos << " of " << scan->ranges.size());
 
   if (min_range >= min_dist_)
     max_velocity = min_range / collision_time_;
