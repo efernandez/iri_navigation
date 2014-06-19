@@ -44,9 +44,9 @@ void SafeCmdAlgNode::mainNodeThread(void)
   if(!alg_.config_.unsafe)
   {
     if(!front_laser_received_)
-      ROS_FATAL("SafeCmdAlgNode::mainNodeThread: Front laser not received");
+      ROS_FATAL_THROTTLE(1,"SafeCmdAlgNode::mainNodeThread: Front laser not received");
     if(!rear_laser_received_)
-      ROS_FATAL("SafeCmdAlgNode::mainNodeThread: Rear laser not received");
+      ROS_FATAL_THROTTLE(1,"SafeCmdAlgNode::mainNodeThread: Rear laser not received");
     
     front_laser_received_ = false;
     rear_laser_received_  = false;
