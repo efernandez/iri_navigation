@@ -165,17 +165,27 @@ int main(int argc,char *argv[])
   return algorithm_base::main<SafeCmdAlgNode>(argc, argv, "safe_cmd_alg_node");
 }
 
+bool min_test_(float i, float j)
+{ 
+  if(i<=0.005)
+    return false;
+  if(j<=0.005)
+    return true;
+  return i<j;
+}
 float SafeCmdAlgNode::compute_max_velocity_(const sensor_msgs::LaserScan::ConstPtr& scan) const
 {
-  float min_range    = *std::min_element( scan->ranges.begin(), scan->ranges.end() );
+  float min_range    = *std::min_element( scan->ranges.begin(), scan->ranges.end(),min_test_);
   int   min_pos      = distance(scan->ranges.begin(),std::min_element( scan->ranges.begin(), scan->ranges.end() ));
   float max_velocity = 0;
 
   ROS_DEBUG_STREAM("compute_max_velocity frame: " << scan->header.frame_id << 
                    " min range: " << min_range << " at " << min_pos << " of " << scan->ranges.size());
-
-  if (min_range >= min_dist_ && min_range > 0.02)
+  
+  if (min_range >= min_dist_)
     max_velocity = min_range / collision_time_;
 
   return max_velocity;
 }
+
+
