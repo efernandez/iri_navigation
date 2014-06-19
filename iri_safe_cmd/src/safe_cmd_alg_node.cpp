@@ -174,7 +174,7 @@ float SafeCmdAlgNode::compute_max_velocity_(const sensor_msgs::LaserScan::ConstP
   ROS_DEBUG_STREAM("compute_max_velocity frame: " << scan->header.frame_id << 
                    " min range: " << min_range << " at " << min_pos << " of " << scan->ranges.size());
 
-  if (min_range >= min_dist_)
+  if (min_range >= min_dist_ && min_range > 0.02)
     max_velocity = min_range / collision_time_;
 
   return max_velocity;
