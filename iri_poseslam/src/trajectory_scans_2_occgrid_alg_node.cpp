@@ -6,16 +6,24 @@ TrajectoryScans2OccGridAlgNode::TrajectoryScans2OccGridAlgNode(void) :
   //init class attributes if necessary
   new_trajectory_ = false;
   last_step_ = 0;
-  
-  public_node_handle_.param<int>("max_n_cells", max_n_cells_, 10000);
-  public_node_handle_.param<bool>("publish_redundant", publish_redundant_, true);
-  public_node_handle_.param<double>("grid_size", grid_size_, 0.5);
-  public_node_handle_.param<double>("laser_ray_incr", laser_ray_incr_, 0.05);
-  public_node_handle_.param<int>("Lfree", Lfree_, -10);
-  public_node_handle_.param<int>("Lobs", Lobs_, 100);
-  public_node_handle_.param<int>("n_cells_x", n_cells_(0), 100);
-  public_node_handle_.param<int>("n_cells_y", n_cells_(1), 100);  
+  double p_free, p_obst, p_thres_free, p_thres_obst;
 
+  public_node_handle_.param<int>("max_n_cells", max_n_cells_, 1e9);
+  public_node_handle_.param<bool>("publish_redundant", publish_redundant_, false);
+  public_node_handle_.param<double>("grid_size", grid_size_, 0.5);
+  public_node_handle_.param<double>("laser_ray_incr", laser_ray_incr_, 0.1);
+  public_node_handle_.param<double>("p_free", p_free, 0.3);
+  public_node_handle_.param<double>("p_obst", p_obst, 0.8);
+  public_node_handle_.param<double>("p_thres_free", p_thres_free, 0.2);
+  public_node_handle_.param<double>("p_thres_obst", p_thres_obst, 0.7); 
+  
+  Lfree_ = log(p_free / (1 - p_free));
+  Lobst_ = log(p_obst / (1 - p_obst));
+  Lfree_thres_ = log(p_thres_free / (1 - p_thres_free));
+  Lobst_thres_ = log(p_thres_obst / (1 - p_thres_obst));
+
+  n_cells_(0) = 10;
+  n_cells_(1) = 10;  
   map_origin_(0) = -n_cells_(0) * grid_size_ / 2;
   map_origin_(1) = -n_cells_(1) * grid_size_ / 2;
   resize_OccupancyGrid();
@@ -282,7 +290,7 @@ void TrajectoryScans2OccGridAlgNode::add_ray_2_logodds(const double& theta, cons
                          point(0), point(1), map_origin_(0), map_origin_(1), map_origin_(0) + grid_size_ * n_cells_(1), map_origin_(1) + grid_size_ * n_cells_(0),
                          cell(1), cell(0), n_cells_(1), n_cells_(0));
     else
-      logodds_grid_(cell(0), cell(1))  += Lobs_;
+      logodds_grid_(cell(0), cell(1))  += Lobst_;
   }
 }
 
@@ -316,7 +324,10 @@ Vector2i TrajectoryScans2OccGridAlgNode::vector2cell(const Vector2f& p)
 void TrajectoryScans2OccGridAlgNode::update_occupancy_grid()
 {
   Array<double, Dynamic, Dynamic, ColMajor> occupancy_probability(n_cells_(0), n_cells_(1));
-  occupancy_probability = 100 * (1 - (1 + logodds_grid_.exp()).cwiseInverse());
+
+  occupancy_probability = (logodds_grid_ >= Lobst_thres_).select(100,occupancy_probability);
+  occupancy_probability = (logodds_grid_ <= Lfree_thres_).select(0,occupancy_probability);
+  occupancy_probability = (logodds_grid_ < Lobst_thres_ && logodds_grid_ > Lfree_thres_).select(-1,occupancy_probability);
 
   std::copy(occupancy_probability.data(), occupancy_probability.data() + occupancy_probability.size(), occupancy_grid_.data.begin());
   //ROS_INFO("TR 2 OCCGRID: OccupancyGrid updated! occupancy_probability.size() = %i - occupancy_grid_.data.size() = %i",occupancy_probability.size(),occupancy_grid_.data.size());

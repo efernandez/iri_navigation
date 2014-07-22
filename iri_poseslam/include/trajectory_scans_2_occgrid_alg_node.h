@@ -81,7 +81,8 @@ class TrajectoryScans2OccGridAlgNode : public algorithm_base::IriBaseAlgorithm<T
     // Occupancy Grid Map
     nav_msgs::OccupancyGrid occupancy_grid_;
     Array<double, Dynamic, Dynamic, ColMajor> logodds_grid_;
-    int Lfree_, Lobs_, max_n_cells_;
+    double Lfree_, Lobst_, Lobst_thres_, Lfree_thres_;
+    int max_n_cells_;
     
     // Other variables
     uint last_step_;

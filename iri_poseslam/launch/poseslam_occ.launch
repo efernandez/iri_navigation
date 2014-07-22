@@ -90,10 +90,10 @@
 <node name="rviz"
       pkg="rviz"
       type="rviz"
-      args="-d $(find iri_poseslam)/config/poseslam_occ.vcg" />
+      args="-d $(find iri_poseslam)/config/poseslam_occ.rviz" />
 
-<include file="$(find teo_base)/launch/teo_state_publisher.launch" />
-
+<!-- <include file="$(find teo_base)/launch/teo_state_publisher.launch" />
+ -->
 <node name="trajectory_broadcaster"
       pkg="iri_poseslam"
       type="trajectory_broadcaster"

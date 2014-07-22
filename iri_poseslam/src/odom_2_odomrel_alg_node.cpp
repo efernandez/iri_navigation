@@ -65,7 +65,7 @@ void Odom2OdomrelAlgNode::odom_callback(const nav_msgs::Odometry::ConstPtr& msg)
   // COVARIANCE
   Matrix3d cov = MatrixXd::Zero(3,3);
   for (uint i = 0; i < 3; i++) 
-    cov(i, i) = covariance_factor_ * covariance_factor_ * odomrel(i) * odomrel(i);
+    cov(i, i) = std::max(covariance_factor_ * covariance_factor_ * odomrel(i) * odomrel(i), 1e6);
   
   // PUBLISH RELATIVE ODOMETRY
   nav_msgs::Odometry new_odomrel;

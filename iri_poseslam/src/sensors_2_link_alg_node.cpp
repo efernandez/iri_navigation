@@ -412,19 +412,19 @@ geometry_msgs::PoseWithCovarianceStamped Sensors2LinkAlgNode::odometry_fusion(co
       {
         odom = int_odom_rel;
         odom_cov = int_odom_rel_cov;
-        ROS_WARN("SENSORS 2 LINK: ICP outlier detected in odometry! Changed to encoders+IMU odometry");
+        ROS_DEBUG("SENSORS 2 LINK: ICP outlier detected in odometry! Changed to encoders+IMU odometry");
       }
       else if (!is_semiPD(odom_ICP_cov)) 
       {
         odom = int_odom_rel;
         odom_cov = int_odom_rel_cov;
-        ROS_WARN("SENSORS 2 LINK: ICP transformed covariance is not PD! Changed to encoders+IMU odometry");
+        ROS_DEBUG("SENSORS 2 LINK: ICP transformed covariance is not PD! Changed to encoders+IMU odometry");
       }
       else if (100 * int_odom_rel_cov.determinant() < odom_cov.determinant() || 100 * int_odom_rel_cov.maxCoeff() < odom_cov.maxCoeff() || odom_cov.maxCoeff() > 1e2)
       {
         odom = int_odom_rel;
         odom_cov = int_odom_rel_cov;
-        ROS_WARN("SENSORS 2 LINK: Huge covariance in odometry! Changed to encoders+IMU odometry");
+        ROS_DEBUG("SENSORS 2 LINK: Huge covariance in odometry! Changed to encoders+IMU odometry");
       }
       //ROS_INFO("odom_ICP_cov:");
       //ROS_INFO_STREAM(odom_ICP_cov);
