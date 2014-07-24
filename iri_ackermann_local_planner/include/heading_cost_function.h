@@ -1,4 +1,5 @@
 /*********************************************************************
+ *
  * Software License Agreement (BSD License)
  *
  *  Copyright (c) 2008, Willow Garage, Inc.
@@ -14,7 +15,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of the Willow Garage nor the names of its
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -30,44 +31,36 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ * Author: TKruse
  *********************************************************************/
-#ifndef TRAJECTORY_ROLLOUT_MAP_CELL_H_
-#define TRAJECTORY_ROLLOUT_MAP_CELL_H_
 
-#include <trajectory_inc.h>
+#ifndef HEADING_COST_FUNCTION_H_
+#define HEADING_COST_FUNCTION_H_
 
-namespace iri_ackermann_local_planner {
-  /**
-   * @class MapCell
-   * @brief Stores path distance and goal distance information used for scoring trajectories
-   */
-  class MapCell{
-    public:
-      /**
-       * @brief  Default constructor
-       */
-      MapCell();
+#include <base_local_planner/trajectory_cost_function.h>
+#include <geometry_msgs/PoseStamped.h>
 
-      /**
-       * @brief  Copy constructor
-       * @param mc The MapCell to be copied
-       */
-      MapCell(const MapCell& mc);
+/**
+ * class HeadingCostFunction
+ * @brief Uses costmap 2d to assign negative costs if robot footprint
+ * is in obstacle on any point of the trajectory.
+ */
+class HeadingCostFunction : public base_local_planner::TrajectoryCostFunction 
+{
+  public:
+    HeadingCostFunction();
 
-      unsigned int cx, cy; ///< @brief Cell index in the grid map
+    bool prepare();
+    double scoreTrajectory(base_local_planner::Trajectory &traj);
 
-      double path_dist; ///< @brief Distance to planner's path
+    void set_global_plan(std::vector<geometry_msgs::PoseStamped> &plan);
+    void set_num_points(int num_points);
 
-      double goal_dist; ///< @brief Distance to local goal
-
-      double occ_dist; ///< @brief Distance to obstacles
-
-      int occ_state; ///< @brief Occupancy state (-1 = free, 0 = unknown, 1 = occupied)
-
-      bool path_mark, goal_mark; ///< @brief Marks fir computing path/goal distances
-
-      bool within_robot; ///< @brief Mark for cells within the robot footprint
-  };
+    ~HeadingCostFunction();
+  private:
+    std::vector<geometry_msgs::PoseStamped> global_plan;
+    int num_points;
 };
 
-#endif
+#endif /* OBSTACLE_COST_FUNCTION_H_ */

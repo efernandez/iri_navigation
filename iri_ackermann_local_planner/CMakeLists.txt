@@ -1,47 +1,109 @@
-cmake_minimum_required(VERSION 2.4.6)
-include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
+cmake_minimum_required(VERSION 2.8.3)
+project(iri_ackermann_local_planner)
 
-set(PROJECT_NAME ackermann_local_planner_alg_node)
+## Find catkin macros and libraries
+find_package(catkin REQUIRED)
+# ******************************************************************** 
+#                 Add catkin additional components here
+# ******************************************************************** 
+find_package(catkin REQUIRED COMPONENTS std_msgs nav_msgs visualization_msgs geometry_msgs nav_core pluginlib tf costmap_2d voxel_grid angles pcl_ros base_local_planner)
 
-# Set the build type.  Options are:
-#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
-#  Debug          : w/ debug symbols, w/o optimization
-#  Release        : w/o debug symbols, w/ optimization
-#  RelWithDebInfo : w/ debug symbols, w/ optimization
-#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-#set(ROS_BUILD_TYPE RelWithDebInfo)
+## System dependencies are found with CMake's conventions
+find_package(Boost REQUIRED COMPONENTS thread)
 
-rosbuild_init()
-
-#set the default path for built executables to the "bin" directory
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-#set the default path for built libraries to the "lib" directory
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
-
-#uncomment if you have defined messages
-rosbuild_genmsg()
-#uncomment if you have defined services
-#rosbuild_gensrv()
-
-# added to include support for dynamic reconfiguration
-rosbuild_find_ros_package(dynamic_reconfigure)
-include(${dynamic_reconfigure_PACKAGE_PATH}/cmake/cfgbuild.cmake)
-gencfg()
-# end dynamic reconfiguration
-
-find_package(Eigen)
-include_directories(${EIGEN_INCLUDE_DIRS})
+# ******************************************************************** 
+#           Add system and labrobotica dependencies here
+# ******************************************************************** 
+# find_package(<dependency> REQUIRED)
+find_package(Eigen REQUIRED)
 add_definitions(${EIGEN_DEFINITIONS})
 
-FIND_PACKAGE(iriutils REQUIRED)
+find_package(iriutils REQUIRED)
 
-INCLUDE_DIRECTORIES(${iriutils_INCLUDE_DIR} ./include)
+# ******************************************************************** 
+#           Add topic, service and action definition here
+# ******************************************************************** 
+## Generate messages in the 'msg' folder
+#add_message_files(
+#  FILES
+#)
 
-#common commands for building c++ executables and libraries
-rosbuild_add_library(${PROJECT_NAME} src/goal_functions.cpp src/map_cell.cpp src/map_grid.cpp src/point_grid.cpp src/costmap_model.cpp src/voxel_grid_model.cpp src/trajectory_planner.cpp src/trajectory.cpp src/trajectory_planner_ros.cpp src/map_grid_visualizer.cpp)
-#target_link_libraries(${PROJECT_NAME} another_library)
-rosbuild_add_boost_directories()
-rosbuild_link_boost(${PROJECT_NAME} thread)
-#rosbuild_add_executable(${PROJECT_NAME} src/ackermann_local_planner_alg.cpp src/ackermann_local_planner_alg_node.cpp)
+## Generate services in the 'srv' folder
+# add_service_files(
+#   FILES
+#   Service1.srv
+#   Service2.srv
+# )
 
-target_link_libraries(${PROJECT_NAME} ${iriutils_LIBRARY})
+## Generate actions in the 'action' folder
+# add_action_files(
+#   FILES
+#   Action1.action
+#   Action2.action
+# )
+
+## Generate added messages and services with any dependencies listed here
+#generate_messages(
+#  DEPENDENCIES
+#  std_msgs  # Or other packages containing msgs
+#)
+
+# ******************************************************************** 
+#                 Add the dynamic reconfigure file 
+# ******************************************************************** 
+generate_dynamic_reconfigure_options(cfg/AckermannLocalPlanner.cfg)
+
+# ******************************************************************** 
+#                 Add run time dependencies here
+# ******************************************************************** 
+catkin_package(
+#  INCLUDE_DIRS 
+#  LIBRARIES 
+# ******************************************************************** 
+#            Add ROS and IRI ROS run time dependencies
+# ******************************************************************** 
+ CATKIN_DEPENDS std_msgs nav_msgs visualization_msgs geometry_msgs nav_core pluginlib tf costmap_2d voxel_grid angles pcl_ros base_local_planner
+# ******************************************************************** 
+#      Add system and labrobotica run time dependencies here
+# ******************************************************************** 
+#  DEPENDS 
+)
+
+###########
+## Build ##
+###########
+
+# ******************************************************************** 
+#                   Add the include directories 
+# ******************************************************************** 
+include_directories(include)
+include_directories(${catkin_INCLUDE_DIRS})
+include_directories(${EIGEN_INCLUDE_DIRS})
+include_directories(${iriutils_INCLUDE_DIR})
+
+## Declare a cpp library
+add_library(${PROJECT_NAME} src/ackermann_odom_helper.cpp src/ackermann_planner_util.cpp src/ackermann_planner_ros src/ackermann_planner.cpp src/ackermann_trajectory_generator.cpp src/heading_cost_function.cpp)
+
+## Declare a cpp executable
+# add_executable(${PROJECT_NAME} <list of source files>)
+
+# ******************************************************************** 
+#                   Add the libraries
+# ******************************************************************** 
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${iriutils_LIBRARIES})
+
+# ******************************************************************** 
+#               Add message headers dependencies 
+# ******************************************************************** 
+# add_dependencies(${PROJECT_NAME} <msg_package_name>_cpp)
+# ******************************************************************** 
+#               Add dynamic reconfigure dependencies 
+# ******************************************************************** 
+# add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS})
+
+## Specify libraries to link a library or executable target against
+# target_link_libraries(foo_node
+#   ${catkin_LIBRARIES}
+# )
+
