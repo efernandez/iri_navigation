@@ -65,7 +65,6 @@
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
-    <cpp cflags="-I${prefix}/include -I${prefix}/cfg/cpp" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -liri_ackermann_local_planner" />
     <nav_core plugin="${prefix}/ackermannlp_plugin.xml" />
   </export>
 </package>

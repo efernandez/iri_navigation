@@ -57,8 +57,8 @@ generate_dynamic_reconfigure_options(cfg/AckermannLocalPlanner.cfg)
 #                 Add run time dependencies here
 # ******************************************************************** 
 catkin_package(
-#  INCLUDE_DIRS 
-#  LIBRARIES 
+ INCLUDE_DIRS include
+ LIBRARIES iri_ackermann_local_planner
 # ******************************************************************** 
 #            Add ROS and IRI ROS run time dependencies
 # ******************************************************************** 
@@ -82,7 +82,7 @@ include_directories(${EIGEN_INCLUDE_DIRS})
 include_directories(${iriutils_INCLUDE_DIR})
 
 ## Declare a cpp library
-add_library(${PROJECT_NAME} src/ackermann_odom_helper.cpp src/ackermann_planner_util.cpp src/ackermann_planner_ros src/ackermann_planner.cpp src/ackermann_trajectory_generator.cpp src/heading_cost_function.cpp)
+add_library(${PROJECT_NAME} src/ackermann_odom_helper.cpp src/ackermann_planner_util.cpp src/ackermann_planner_ros src/ackermann_planner.cpp src/ackermann_trajectory_generator.cpp src/heading_cost_function.cpp src/ackermann_trajectory_search.cpp)
 
 ## Declare a cpp executable
 # add_executable(${PROJECT_NAME} <list of source files>)

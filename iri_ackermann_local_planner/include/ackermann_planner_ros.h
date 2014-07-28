@@ -136,6 +136,7 @@ class AckermannPlannerROS : public nav_core::BaseLocalPlanner
     bool setup_;
     tf::Stamped<tf::Pose> current_pose_;
     bool initialized_;
+    int patience_;
 
     AckermannOdomHelper odom_helper_;
     std::string odom_topic_;

@@ -38,6 +38,7 @@
 #include <ackermann_trajectory_generator.h>
 
 #include <cmath>
+#include <iostream>
 
 #include <base_local_planner/velocity_iterator.h>
 
@@ -201,10 +202,9 @@ void AckermannTrajectoryGenerator::initialise(
     }
   }
   double d=0.0,T5=0.0,a,b,c;
-
   max_trans_vel=(trans_vel+limits->max_trans_acc*sim_time_)/2.0;
-  if(max_trans_vel>limits->max_steer_vel)
-    max_trans_vel=limits->max_steer_vel;
+  if(max_trans_vel>limits->max_trans_vel)
+    max_trans_vel=limits->max_trans_vel;
   if(trans_vel>0)
   {
     T5=sim_time_-(2.0*max_trans_vel-trans_vel)/limits->max_trans_acc;
@@ -591,7 +591,10 @@ bool AckermannTrajectoryGenerator::generate_trajectory(
     {
       r=sqrt(0.8*0.8+limits_->axis_distance*limits_->axis_distance/(tan(steer_angle_i)*tan(steer_angle_i)));
       d=trans_vel_i*dt;
-      theta_i+=d/r;
+      if(steer_angle_i>0)
+        theta_i+=d/r;
+      else
+        theta_i-=d/r;
       x_i+=d*cos(theta_i);
       y_i+=d*sin(theta_i);
     }

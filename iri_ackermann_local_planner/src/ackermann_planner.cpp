@@ -165,8 +165,8 @@ AckermannPlanner::AckermannPlanner(std::string name,AckermannPlannerUtil *planne
   std::vector<base_local_planner::TrajectoryCostFunction*> critics;
   critics.push_back(&oscillation_costs_); // discards oscillating motions (assisgns cost -1)
   critics.push_back(&obstacle_costs_); // discards trajectories that move into obstacles
-  critics.push_back(&goal_front_costs_); // prefers trajectories that make the nose go towards (local) nose goal
-  critics.push_back(&alignment_costs_); // prefers trajectories that keep the robot nose on nose path
+//  critics.push_back(&goal_front_costs_); // prefers trajectories that make the nose go towards (local) nose goal
+//  critics.push_back(&alignment_costs_); // prefers trajectories that keep the robot nose on nose path
   critics.push_back(&path_costs_); // prefers trajectories on global path
   critics.push_back(&goal_costs_); // prefers trajectories that go towards (local) goal, based on wave propagation
   critics.push_back(&heading_costs_); // prefers trajectories that go towards (local) goal, based on wave propagation
@@ -175,7 +175,7 @@ AckermannPlanner::AckermannPlanner(std::string name,AckermannPlannerUtil *planne
   std::vector<base_local_planner::TrajectorySampleGenerator*> generator_list;
   generator_list.push_back(&generator_);
 
-  scored_sampling_planner_ = base_local_planner::SimpleScoredSamplingPlanner(generator_list, critics);
+  scored_sampling_planner_ = AckermannTrajectorySearch(generator_list, critics);
 
   private_nh.param("cheat_factor", cheat_factor_, 1.0);
 }

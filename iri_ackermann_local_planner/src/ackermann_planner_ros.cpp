@@ -52,7 +52,7 @@ PLUGINLIB_EXPORT_CLASS(AckermannPlannerROS, nav_core::BaseLocalPlanner)
 AckermannPlannerROS::AckermannPlannerROS() : initialized_(false),
   odom_helper_("odom"), setup_(false) 
 {
-
+  patience_=1;
 }
 
 void AckermannPlannerROS::reconfigure_callback(iri_ackermann_local_planner::AckermannLocalPlannerConfig &config, uint32_t level) 
@@ -72,6 +72,7 @@ void AckermannPlannerROS::reconfigure_callback(iri_ackermann_local_planner::Acke
   AckermannPlannerLimits limits;
   limits.max_trans_vel = config.max_trans_vel;
   limits.min_trans_vel = config.min_trans_vel;
+  limits.max_trans_acc = config.max_trans_acc;
   limits.max_steer_angle = config.max_steer_angle;
   limits.min_steer_angle = config.min_steer_angle;
   limits.max_steer_vel = config.max_steer_vel;
@@ -88,6 +89,8 @@ void AckermannPlannerROS::reconfigure_callback(iri_ackermann_local_planner::Acke
   limits.trans_stopped_vel = config.trans_stopped_vel;
   limits.rot_stopped_vel = config.rot_stopped_vel;
   planner_util_.reconfigure_callback(limits, config.restore_defaults);
+
+  patience_=config.planner_patience;
 
   // update ackermann specific configuration
   dp_->reconfigure(config);
@@ -155,6 +158,8 @@ void AckermannPlannerROS::publish_global_plan(std::vector<geometry_msgs::PoseSta
 
 bool AckermannPlannerROS::ackermann_compute_velocity_commands(tf::Stamped<tf::Pose> &global_pose, geometry_msgs::Twist& cmd_vel) 
 {
+  static int count=0;
+
   // dynamic window sampling approach to get useful velocity commands
   if(! is_initialized())
   {
@@ -186,8 +191,18 @@ bool AckermannPlannerROS::ackermann_compute_velocity_commands(tf::Stamped<tf::Po
 	"The ackermann local planner failed to find a valid plan, cost functions discarded all candidates. This can mean there is an obstacle too close to the robot.");
     local_plan.clear();
     publish_local_plan(local_plan);
-    return false;
+    std::cout << "Impossible to find path" << std::endl;
+    count++;
+    if(count>patience_)
+    {
+      count=0;
+      return false;
+    }
+    else
+      return true;
   }
+  else
+    count=0;
 
   ROS_DEBUG_NAMED("ackermann_local_planner", "A valid velocity command of (%.2f, %.2f, %.2f) was found for this cycle.", 
       cmd_vel.linear.x, cmd_vel.linear.y, cmd_vel.angular.z);
@@ -251,6 +266,11 @@ bool AckermannPlannerROS::isGoalReached(void)
     return false;
 }
 
+bool AckermannPlannerROS::is_initialized()
+{
+  return initialized_;
+}
+
 bool AckermannPlannerROS::computeVelocityCommands(geometry_msgs::Twist& cmd_vel) 
 {
   nav_msgs::Odometry odom;
@@ -290,6 +310,7 @@ bool AckermannPlannerROS::computeVelocityCommands(geometry_msgs::Twist& cmd_vel)
                                        limits.rot_stopped_vel,limits.trans_stopped_vel,
                                        limits.xy_goal_tolerance,limits.yaw_goal_tolerance))
   {
+    std::cout << "Goal Reached !!!!!!!!!!!!!!!!!!!!!" << std::endl;
     if(planner_util_.set_next_path())
     {
       bool isOk = ackermann_compute_velocity_commands(current_pose_, cmd_vel);
