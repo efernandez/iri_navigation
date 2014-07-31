@@ -63,13 +63,11 @@ void AckermannPlanner::reconfigure(iri_ackermann_local_planner::AckermannLocalPl
   pdist_scale_ = config.path_distance_bias;
   // pdistscale used for both path and alignment, set  forward_point_distance to zero to discard alignment
   path_costs_.setScale(resolution * pdist_scale_ * 0.5);
-  alignment_costs_.setScale(resolution * pdist_scale_ * 0.5);
   hdiff_scale_=config.hdiff_scale;
   heading_costs_.setScale(hdiff_scale_);
 
   gdist_scale_ = config.goal_distance_bias;
   goal_costs_.setScale(resolution * gdist_scale_ * 0.5);
-  goal_front_costs_.setScale(resolution * gdist_scale_ * 0.5);
 
   occdist_scale_ = config.occdist_scale;
   obstacle_costs_.setScale(resolution * occdist_scale_);
@@ -77,8 +75,6 @@ void AckermannPlanner::reconfigure(iri_ackermann_local_planner::AckermannLocalPl
   stop_time_buffer_ = config.stop_time_buffer;
   oscillation_costs_.setOscillationResetDist(config.oscillation_reset_dist, config.oscillation_reset_angle);
   forward_point_distance_ = config.forward_point_distance;
-  goal_front_costs_.setXShift(forward_point_distance_);
-  alignment_costs_.setXShift(forward_point_distance_);
   heading_costs_.set_num_points(config.heading_points);
 
   // obstacle costs can vary due to scaling footprint feature
@@ -110,14 +106,9 @@ AckermannPlanner::AckermannPlanner(std::string name,AckermannPlannerUtil *planne
   planner_util_(planner_util),
   obstacle_costs_(planner_util->get_costmap()),
   path_costs_(planner_util->get_costmap()),
-  goal_costs_(planner_util->get_costmap(), 0.0, 0.0, true),
-  goal_front_costs_(planner_util->get_costmap(), 0.0, 0.0, true),
-  alignment_costs_(planner_util->get_costmap())
+  goal_costs_(planner_util->get_costmap(), 0.0, 0.0, true)
 {
   ros::NodeHandle private_nh("~/" + name);
-
-  goal_front_costs_.setStopOnFailure( false );
-  alignment_costs_.setStopOnFailure( false );
 
   //Assuming this planner is being run within the navigation stack, we can
   //just do an upward search for the frequency at which its being run. This
@@ -165,8 +156,6 @@ AckermannPlanner::AckermannPlanner(std::string name,AckermannPlannerUtil *planne
   std::vector<base_local_planner::TrajectoryCostFunction*> critics;
   critics.push_back(&oscillation_costs_); // discards oscillating motions (assisgns cost -1)
   critics.push_back(&obstacle_costs_); // discards trajectories that move into obstacles
-//  critics.push_back(&goal_front_costs_); // prefers trajectories that make the nose go towards (local) nose goal
-//  critics.push_back(&alignment_costs_); // prefers trajectories that keep the robot nose on nose path
   critics.push_back(&path_costs_); // prefers trajectories on global path
   critics.push_back(&goal_costs_); // prefers trajectories that go towards (local) goal, based on wave propagation
   critics.push_back(&heading_costs_); // prefers trajectories that go towards (local) goal, based on wave propagation
@@ -249,38 +238,6 @@ void AckermannPlanner::update_plan_and_local_costs(tf::Stamped<tf::Pose> global_
   // alignment costs
   geometry_msgs::PoseStamped goal_pose = global_plan_.back();
 
-  Eigen::Vector3f pos(global_pose.getOrigin().getX(), global_pose.getOrigin().getY(), tf::getYaw(global_pose.getRotation()));
-  double sq_dist =
-    (pos[0] - goal_pose.pose.position.x) * (pos[0] - goal_pose.pose.position.x) +
-    (pos[1] - goal_pose.pose.position.y) * (pos[1] - goal_pose.pose.position.y);
-
-  // we want the robot nose to be drawn to its final position
-  // (before robot turns towards goal orientation), not the end of the
-  // path for the robot center. Choosing the final position after
-  // turning towards goal orientation causes instability when the
-  // robot needs to make a 180 degree turn at the end
-  std::vector<geometry_msgs::PoseStamped> front_global_plan = global_plan_;
-  double angle_to_goal = atan2(goal_pose.pose.position.y - pos[1], goal_pose.pose.position.x - pos[0]);
-  front_global_plan.back().pose.position.x = front_global_plan.back().pose.position.x +
-    forward_point_distance_ * cos(angle_to_goal);
-  front_global_plan.back().pose.position.y = front_global_plan.back().pose.position.y + forward_point_distance_ *
-    sin(angle_to_goal);
-
-  goal_front_costs_.setTargetPoses(front_global_plan);
-
-  // keeping the nose on the path
-  if (sq_dist > forward_point_distance_ * forward_point_distance_ * cheat_factor_) 
-  {
-    double resolution = planner_util_->get_costmap()->getResolution();
-    alignment_costs_.setScale(resolution * pdist_scale_ * 0.5);
-    // costs for robot being aligned with path (nose on path, not ju
-    alignment_costs_.setTargetPoses(global_plan_);
-  } 
-  else 
-  {
-    // once we are close to goal, trying to keep the nose close to anything destabilizes behavior.
-    alignment_costs_.setScale(0.0);
-  }
 }
 
 /*
@@ -358,6 +315,9 @@ base_local_planner::Trajectory AckermannPlanner::find_best_path(tf::Stamped<tf::
   } 
   else 
   {
+    // steer the car without moving if the steering angle is big
+    if(fabs(ack_state.steer_angle-result_traj_.thetav_)>0.1)
+      result_traj_.xv_=0.0;
     tf::Vector3 start(result_traj_.xv_, result_traj_.yv_, 0);
     drive_velocities.setOrigin(start);
     tf::Matrix3x3 matrix;

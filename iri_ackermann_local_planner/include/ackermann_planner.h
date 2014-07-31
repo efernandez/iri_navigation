@@ -168,8 +168,6 @@ class AckermannPlanner
     HeadingCostFunction heading_costs_;
     base_local_planner::MapGridCostFunction path_costs_;
     base_local_planner::MapGridCostFunction goal_costs_;
-    base_local_planner::MapGridCostFunction goal_front_costs_;
-    base_local_planner::MapGridCostFunction alignment_costs_;
 
     AckermannTrajectorySearch scored_sampling_planner_;
 };

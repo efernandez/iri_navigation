@@ -116,8 +116,14 @@ bool AckermannPlannerUtil::set_plan(const std::vector<geometry_msgs::PoseStamped
       double y0 = orig_global_plan[i  ].pose.position.y;
       double y1 = orig_global_plan[i-1].pose.position.y;
       double y2 = orig_global_plan[i-2].pose.position.y;
-      double angle=std::acos(((x0-x1)*(x1-x2)+(y0-y1)*(y1-y2))/(std::sqrt(std::pow(x0-x1,2)+std::pow(y0-y1,2))*std::sqrt(std::pow(x1-x2,2)+std::pow(y1-y2,2))));
+      double angle=((x0-x1)*(x1-x2)+(y0-y1)*(y1-y2))/(std::sqrt(std::pow(x0-x1,2)+std::pow(y0-y1,2))*std::sqrt(std::pow(x1-x2,2)+std::pow(y1-y2,2)));
+      if(angle<-1.0)
+        angle=-1.0;
+      else if(angle>1.0)
+        angle=1.0;
+      angle=std::acos(angle);
       pathLength+= std::sqrt(std::pow(x0-x1,2)+std::pow(y0-y1,2));
+      std::cout << x0 << "," << y0 << std::endl;
       if(fabs(angle)>1.57) //if changes of direction detected
       {
         if(pathLength>1.0)
