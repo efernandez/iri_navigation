@@ -74,7 +74,7 @@ void Sensors2LinkAlgNode::mainNodeThread(void)
 /*  [subscriber callbacks] */
 void Sensors2LinkAlgNode::scan_callback(const sensor_msgs::LaserScan::ConstPtr& msg)
 {
-  //ROS_INFO("SENSORS 2 LINK: New laser scan received! time = %f", msg->header.stamp.toSec());
+  ROS_DEBUG("SENSORS 2 LINK: New laser scan received! time = %f", msg->header.stamp.toSec());
 
   // LOAD THE LASER SCAN
   if (laser_scan_counter_ >= N_scans_discard_)
@@ -97,7 +97,7 @@ void Sensors2LinkAlgNode::scan_callback(const sensor_msgs::LaserScan::ConstPtr& 
 
 void Sensors2LinkAlgNode::odom_relative_callback(const nav_msgs::Odometry::ConstPtr& msg)
 {
-  //ROS_INFO("SENSORS 2 LINK: Odom_relative received! time = %f - seq = %i", msg->header.stamp.toSec(), msg->header.seq);
+  ROS_DEBUG("SENSORS 2 LINK: Odom_relative received! time = %f - seq = %i", msg->header.stamp.toSec(), msg->header.seq);
 
   if (prev_seq_ !=0 && prev_seq_ + 1 < msg->header.seq)
     ROS_WARN("SENSORS 2 LINK: Any odom relative lost! prev_seq_ = %i current_seq = %i", prev_seq_, msg->header.seq);
@@ -126,6 +126,8 @@ void Sensors2LinkAlgNode::odom_relative_callback(const nav_msgs::Odometry::Const
     // Odometry noise
     Q = covariance_2_matrix(msg->pose);
   }
+  else
+    ROS_DEBUG("SENSORS 2 LINK: Zero odometry (STOPPED)");
   
   // accumulate odometry
   // TIME
@@ -175,12 +177,13 @@ void Sensors2LinkAlgNode::odom_relative_callback(const nav_msgs::Odometry::Const
     odom_buffer_.push_back(new_odometry);
     new_laser_scan_ = false;
 
-    //ROS_INFO("SENSORS 2 LINK: New precomputed odometry stored!");
+    ROS_DEBUG("SENSORS 2 LINK: New precomputed odometry stored!");
   }
 
   // ONLINE MODE
   else if (odom_rel_buffer_.size() > 1 && new_laser_scan_ && last_laser_scan_.header.stamp < msg->header.stamp)
   {
+    ROS_DEBUG("SENSORS 2 LINK: Odom + scan fusion ready!");
     fusion_ready_ = true;
     new_laser_scan_ = false;
     ready_laser_scan_ = last_laser_scan_;
@@ -190,6 +193,7 @@ void Sensors2LinkAlgNode::odom_relative_callback(const nav_msgs::Odometry::Const
 
 void Sensors2LinkAlgNode::cmd_vel_callback(const geometry_msgs::Twist::ConstPtr& msg)
 {
+  ROS_DEBUG("SENSORS 2 LINK: cmd_vel callback: %f, %f, %f", msg->linear.x, msg->linear.y, msg->linear.z);
   currently_stopped_ = (msg->linear.x == 0 && msg->linear.y == 0 && msg->linear.z == 0 && msg->angular.x == 0 && msg->angular.y == 0 && msg->angular.z == 0);
   
   if (stopped_since_last_odom_ && !currently_stopped_)
@@ -209,6 +213,7 @@ bool Sensors2LinkAlgNode::get_linkCallback(iri_poseslam::GetLink::Request &req, 
   // FIRST CALLBACK (ask for first laser scan header)
   if (req.current_step == 0 && req.with_step == 0 )
   {
+    ROS_DEBUG("SENSORS 2 LINK: first laser scan header Request Received!");
     if (!laser_scan_buffer_.empty())
     {
       res.odom.header = laser_scan_buffer_.front().header;

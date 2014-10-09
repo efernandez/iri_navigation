@@ -82,6 +82,8 @@ void PoseslamAlgNode::mainNodeThread(void)
     	
       ROS_DEBUG("POSE SLAM: FIRST STATE - step_: %i\npose: %f, %f, %f", step_, alg_.get_last_pose()(0), alg_.get_last_pose()(1), alg_.get_last_pose()(2));
     }
+    else
+      ROS_DEBUG("POSE SLAM: Couldn't get FIRST STATE");
   }
   
   // ---------- POSE SLAM ROUTINE -----------

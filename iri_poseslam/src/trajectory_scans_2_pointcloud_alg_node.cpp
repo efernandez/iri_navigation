@@ -17,6 +17,8 @@ TrajectoryScans2PointcloudAlgNode::TrajectoryScans2PointcloudAlgNode(void) :
 
   ROS_DEBUG("TR 2 PC: Config updated");
  
+
+  PointCloud_msg_.header.frame_id = "/map";
   //this->loop_rate_ = 2;//in [Hz]
 
   // [init publishers]
@@ -210,8 +212,8 @@ void TrajectoryScans2PointcloudAlgNode::add_to_PointCloud_msg(const sensor_msgs:
   if (emptyPointCloud_)
   {
     PointCloud_msg_ = newPointCloud;
-    PointCloud_msg_.header.frame_id = "/map";
     emptyPointCloud_ = false;
+    PointCloud_msg_.header.frame_id = "/map";
   }
   else
   {
