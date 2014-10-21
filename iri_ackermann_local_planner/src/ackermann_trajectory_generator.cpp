@@ -39,6 +39,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <algorithm> 
 
 #include <base_local_planner/velocity_iterator.h>
 

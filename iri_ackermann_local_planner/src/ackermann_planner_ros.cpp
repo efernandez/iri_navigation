@@ -313,6 +313,7 @@ bool AckermannPlannerROS::computeVelocityCommands(geometry_msgs::Twist& cmd_vel)
     std::cout << "Goal Reached !!!!!!!!!!!!!!!!!!!!!" << std::endl;
     if(planner_util_.set_next_path())
     {
+      this->dp_->set_new_segment();
       bool isOk = ackermann_compute_velocity_commands(current_pose_, cmd_vel);
       if (isOk) 
         publish_global_plan(transformed_plan);

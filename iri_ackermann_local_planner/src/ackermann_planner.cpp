@@ -167,6 +167,8 @@ AckermannPlanner::AckermannPlanner(std::string name,AckermannPlannerUtil *planne
   scored_sampling_planner_ = AckermannTrajectorySearch(generator_list, critics);
 
   private_nh.param("cheat_factor", cheat_factor_, 1.0);
+
+  this->new_segment_=false;
 }
 
 // used for visualization only, total_costs are not really total costs
@@ -192,6 +194,11 @@ bool AckermannPlanner::get_cell_costs(int cx, int cy, float &path_cost, float &g
 bool AckermannPlanner::set_plan(const std::vector<geometry_msgs::PoseStamped>& orig_global_plan) {
   oscillation_costs_.resetOscillationFlags();
   return planner_util_->set_plan(orig_global_plan);
+}
+
+void AckermannPlanner::set_new_segment(void)
+{
+  this->new_segment_=true;
 }
 
 /**
@@ -316,8 +323,13 @@ base_local_planner::Trajectory AckermannPlanner::find_best_path(tf::Stamped<tf::
   else 
   {
     // steer the car without moving if the steering angle is big
-    if(fabs(ack_state.steer_angle-result_traj_.thetav_)>0.1)
-      result_traj_.xv_=0.0;
+    if(this->new_segment_)
+    {
+      if(fabs(ack_state.steer_angle-result_traj_.thetav_)>0.01)
+        result_traj_.xv_=0.0;
+      else
+        this->new_segment_=false;
+    }
     tf::Vector3 start(result_traj_.xv_, result_traj_.yv_, 0);
     drive_velocities.setOrigin(start);
     tf::Matrix3x3 matrix;

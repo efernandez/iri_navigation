@@ -136,6 +136,8 @@ class AckermannPlanner
      */
     bool set_plan(const std::vector<geometry_msgs::PoseStamped>& orig_global_plan);
 
+    void set_new_segment(void);
+
   private:
 
     AckermannPlannerUtil *planner_util_;
@@ -156,6 +158,7 @@ class AckermannPlanner
     pcl_ros::Publisher<base_local_planner::MapGridCostPoint> traj_cloud_pub_;
     bool publish_cost_grid_pc_; ///< @brief Whether or not to build and publish a PointCloud
     bool publish_traj_pc_;
+    bool new_segment_;
 
     double cheat_factor_;
 
