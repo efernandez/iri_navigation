@@ -275,6 +275,10 @@ bool AckermannPlannerROS::computeVelocityCommands(geometry_msgs::Twist& cmd_vel)
 {
   nav_msgs::Odometry odom;
   AckermannPlannerLimits limits;
+  tf::Stamped<tf::Pose> goal_pose;
+  static int stucked_count=0;
+  static bool stucked=false,new_segment=false;
+
   // dispatches to either ackermann sampling control or stop and rotate control, depending on whether we have been close enough to goal
   if ( ! costmap_ros_->getRobotPose(current_pose_)) 
   {
@@ -301,19 +305,20 @@ bool AckermannPlannerROS::computeVelocityCommands(geometry_msgs::Twist& cmd_vel)
 
   odom_helper_.get_odom(odom);
   limits=planner_util_.get_current_limits();
-  if(base_local_planner::isGoalReached(*tf_,
-                                       transformed_plan,
-                                       *costmap_ros_->getCostmap(),
-                                       costmap_ros_->getGlobalFrameID(),
-                                       current_pose_,
-                                       odom,
-                                       limits.rot_stopped_vel,limits.trans_stopped_vel,
-                                       limits.xy_goal_tolerance,limits.yaw_goal_tolerance))
+  if(stucked==true || base_local_planner::isGoalReached(*tf_,
+                                                        transformed_plan,
+                                                        *costmap_ros_->getCostmap(),
+                                                        costmap_ros_->getGlobalFrameID(),
+                                                        current_pose_,
+                                                        odom,
+                                                        limits.rot_stopped_vel,limits.trans_stopped_vel,
+                                                        limits.xy_goal_tolerance,limits.yaw_goal_tolerance))
   {
+    stucked=false;
     std::cout << "Goal Reached !!!!!!!!!!!!!!!!!!!!!" << std::endl;
     if(planner_util_.set_next_path())
     {
-      this->dp_->set_new_segment();
+      new_segment=true;
       bool isOk = ackermann_compute_velocity_commands(current_pose_, cmd_vel);
       if (isOk) 
         publish_global_plan(transformed_plan);
@@ -339,6 +344,38 @@ bool AckermannPlannerROS::computeVelocityCommands(geometry_msgs::Twist& cmd_vel)
   else
   {
     bool isOk = ackermann_compute_velocity_commands(current_pose_, cmd_vel);
+    // check wether the robot get stucked or not
+    if(new_segment)
+    {
+      TAckermannState ackermann;
+      odom_helper_.get_ackermann_state(ackermann);
+      // steer the car without moving if the steering angle is big
+      if(fabs(ackermann.steer_angle-cmd_vel.angular.z)>0.01)
+        cmd_vel.linear.x=0.0;
+      else
+        new_segment=false;
+    }
+    else if(fabs(cmd_vel.linear.x)<0.05)
+    {
+       // get the position of the goal
+       base_local_planner::getGoalPose(*tf_,
+                                       transformed_plan,
+                                       costmap_ros_->getGlobalFrameID(),
+                                       goal_pose);
+       // get the distance to the goal
+       double dist=base_local_planner::getGoalPositionDistance(current_pose_,goal_pose.getOrigin().getX(),goal_pose.getOrigin().getY())>limits.xy_goal_tolerance;
+       if(dist>limits.xy_goal_tolerance)
+       {
+         stucked_count++;
+         if(stucked_count>10)
+         {
+           stucked=true;
+           ROS_INFO("Robot is stucked, jumoing to the next segment");
+         }
+       }
+    }
+    else
+      stucked_count=0;
     if (isOk) 
       publish_global_plan(transformed_plan);
     else 
