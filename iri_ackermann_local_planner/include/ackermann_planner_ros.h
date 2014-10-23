@@ -140,5 +140,7 @@ class AckermannPlannerROS : public nav_core::BaseLocalPlanner
 
     AckermannOdomHelper odom_helper_;
     std::string odom_topic_;
+
+    bool stucked;
 };
 #endif

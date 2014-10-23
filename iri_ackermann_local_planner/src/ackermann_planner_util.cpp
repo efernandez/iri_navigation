@@ -178,6 +178,8 @@ bool AckermannPlannerUtil::last_path(void)
 
 bool AckermannPlannerUtil::get_local_plan(tf::Stamped<tf::Pose>& global_pose, std::vector<geometry_msgs::PoseStamped>& transformed_plan) 
 {
+  global_pose.stamp_-=ros::Duration(1.0);
+
   //get the global plan in our frame
   if(!base_local_planner::transformGlobalPlan(*tf_,global_plan_,global_pose,*costmap_,global_frame_,transformed_plan)) {
     ROS_WARN("Could not transform the global plan to the frame of the controller");

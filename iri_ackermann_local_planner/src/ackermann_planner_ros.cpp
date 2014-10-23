@@ -125,6 +125,7 @@ void AckermannPlannerROS::initialize(std::string name,tf::TransformListener* tf,
     dsrv_ = new dynamic_reconfigure::Server<iri_ackermann_local_planner::AckermannLocalPlannerConfig>(private_nh);
     dynamic_reconfigure::Server<iri_ackermann_local_planner::AckermannLocalPlannerConfig>::CallbackType cb = boost::bind(&AckermannPlannerROS::reconfigure_callback, this, _1, _2);
     dsrv_->setCallback(cb);
+    this->stucked=false;
   }
   else
   {
@@ -140,7 +141,7 @@ bool AckermannPlannerROS::setPlan(const std::vector<geometry_msgs::PoseStamped>&
   }
   //when we get a new plan, we also want to clear any latch we may have on goal tolerances
   // latchedStopRotateController_.resetLatching();
-
+  this->stucked=false;
   ROS_INFO("Got new plan");
   return dp_->set_plan(orig_global_plan);
 }
@@ -168,7 +169,23 @@ bool AckermannPlannerROS::ackermann_compute_velocity_commands(tf::Stamped<tf::Po
   }
 
   TAckermannState ackermann;
+  AckermannPlannerLimits limits; 
+
   odom_helper_.get_ackermann_state(ackermann);
+  limits=planner_util_.get_current_limits();
+  // saturate speeds and angles
+  if(ackermann.trans_speed>limits.max_trans_vel)
+    ackermann.trans_speed=limits.max_trans_vel;
+  else if(ackermann.trans_speed<limits.min_trans_vel)
+    ackermann.trans_speed=limits.min_trans_vel;
+  if(ackermann.steer_angle>limits.max_steer_angle)
+    ackermann.steer_angle=limits.max_steer_angle;
+  else if(ackermann.steer_angle<limits.min_steer_angle)
+    ackermann.steer_angle=limits.min_steer_angle;
+  if(ackermann.steer_speed>limits.max_steer_vel)
+    ackermann.steer_speed=limits.max_steer_vel;
+  else if(ackermann.steer_speed<limits.min_steer_vel)
+    ackermann.steer_speed=limits.min_steer_vel;
 
   //compute what trajectory to drive along
   tf::Stamped<tf::Pose> drive_cmds;
@@ -250,19 +267,26 @@ bool AckermannPlannerROS::isGoalReached(void)
   }
   odom_helper_.get_odom(odom);
   limits=planner_util_.get_current_limits();
-  if(planner_util_.last_path() && base_local_planner::isGoalReached(*tf_,
-                                                                    transformed_plan,
-                                                                    *costmap_ros_->getCostmap(),
-                                                                    costmap_ros_->getGlobalFrameID(),
-                                                                    current_pose_,
-                                                                    odom,
-                                                                    limits.rot_stopped_vel,limits.trans_stopped_vel,
-                                                                    limits.xy_goal_tolerance,limits.yaw_goal_tolerance))
+  if(planner_util_.last_path())
   {
-    ROS_INFO("Goal reached");
-    return true;
+    if(base_local_planner::isGoalReached(*tf_,
+                                         transformed_plan,
+                                         *costmap_ros_->getCostmap(),
+                                         costmap_ros_->getGlobalFrameID(),
+                                         current_pose_,
+                                         odom,
+                                         limits.rot_stopped_vel,limits.trans_stopped_vel,
+                                         limits.xy_goal_tolerance,limits.yaw_goal_tolerance))
+    {
+      ROS_INFO("Goal reached");
+      return true;
+    }
+    else if(this->stucked)
+      return true;
+    else
+      return false;
   } 
-  else 
+  else
     return false;
 }
 
@@ -277,7 +301,7 @@ bool AckermannPlannerROS::computeVelocityCommands(geometry_msgs::Twist& cmd_vel)
   AckermannPlannerLimits limits;
   tf::Stamped<tf::Pose> goal_pose;
   static int stucked_count=0;
-  static bool stucked=false,new_segment=false;
+  static bool new_segment=false;
 
   // dispatches to either ackermann sampling control or stop and rotate control, depending on whether we have been close enough to goal
   if ( ! costmap_ros_->getRobotPose(current_pose_)) 
@@ -305,7 +329,7 @@ bool AckermannPlannerROS::computeVelocityCommands(geometry_msgs::Twist& cmd_vel)
 
   odom_helper_.get_odom(odom);
   limits=planner_util_.get_current_limits();
-  if(stucked==true || base_local_planner::isGoalReached(*tf_,
+  if(this->stucked || base_local_planner::isGoalReached(*tf_,
                                                         transformed_plan,
                                                         *costmap_ros_->getCostmap(),
                                                         costmap_ros_->getGlobalFrameID(),
@@ -314,10 +338,10 @@ bool AckermannPlannerROS::computeVelocityCommands(geometry_msgs::Twist& cmd_vel)
                                                         limits.rot_stopped_vel,limits.trans_stopped_vel,
                                                         limits.xy_goal_tolerance,limits.yaw_goal_tolerance))
   {
-    stucked=false;
     std::cout << "Goal Reached !!!!!!!!!!!!!!!!!!!!!" << std::endl;
     if(planner_util_.set_next_path())
     {
+      this->stucked=false;
       new_segment=true;
       bool isOk = ackermann_compute_velocity_commands(current_pose_, cmd_vel);
       if (isOk) 
@@ -350,12 +374,15 @@ bool AckermannPlannerROS::computeVelocityCommands(geometry_msgs::Twist& cmd_vel)
       TAckermannState ackermann;
       odom_helper_.get_ackermann_state(ackermann);
       // steer the car without moving if the steering angle is big
-      if(fabs(ackermann.steer_angle-cmd_vel.angular.z)>0.01)
+      if(fabs(ackermann.steer_angle-cmd_vel.angular.z)>0.05)
+      {
+        ROS_WARN("Setting forward speed to 0 (%f,%f)",ackermann.steer_angle,cmd_vel.angular.z);
         cmd_vel.linear.x=0.0;
+      }
       else
         new_segment=false;
     }
-    else if(fabs(cmd_vel.linear.x)<0.05)
+    else if(fabs(cmd_vel.linear.x)<0.01)
     {
        // get the position of the goal
        base_local_planner::getGoalPose(*tf_,
@@ -369,8 +396,8 @@ bool AckermannPlannerROS::computeVelocityCommands(geometry_msgs::Twist& cmd_vel)
          stucked_count++;
          if(stucked_count>10)
          {
-           stucked=true;
-           ROS_INFO("Robot is stucked, jumoing to the next segment");
+           this->stucked=true;
+           ROS_INFO("Robot is stucked, jumping to the next segment");
          }
        }
     }
